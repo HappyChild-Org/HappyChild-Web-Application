@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Bài Test Mới</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .content-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            color: #3F51B5;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: #757575;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #3F51B5;
+            border-bottom: 2px solid #E0E0E0;
+            padding-bottom: 10px;
+        }
+
+        .form-floating {
+            margin-bottom: 20px;
+        }
+
+        .form-floating label {
+            color: #757575;
+        }
+
+        .form-control:focus {
+            border-color: #3F51B5;
+            box-shadow: 0 0 0 0.25rem rgba(63, 81, 181, 0.25);
+        }
+
+        .age-range {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .age-input {
+            flex: 1;
+        }
+
+        .range-separator {
+            font-weight: bold;
+            color: #757575;
+        }
+
+        .btn-action {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-submit {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        .btn-submit:hover {
+            background-color: #388E3C;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-cancel {
+            background-color: #9E9E9E;
+            color: white;
+            border: none;
+            margin-right: 15px;
+        }
+
+        .btn-cancel:hover {
+            background-color: #757575;
+            transform: translateY(-2px);
+        }
+
+        .form-actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .form-text {
+            color: #757575;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* Accordion for question section */
+        .accordion-button:not(.collapsed) {
+            background-color: #E8EAF6;
+            color: #3F51B5;
+        }
+
+        .accordion-button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(63, 81, 181, 0.25);
+            border-color: #3F51B5;
+        }
+    </style>
+</head>
+
+<body>
+    <div th:replace="layout :: nav"></div>
+
+    <div class="container">
+        <div class="content-container">
+            <h1 class="page-title">Tạo Bài Test Mới</h1>
+            <p class="page-subtitle">Thiết kế bài test đánh giá tự kỷ cho trẻ em</p>
+
+            <form th:action="@{/teacher/create-test}" method="post">
+                <div class="form-section">
+                    <h3 class="section-title">Thông tin cơ bản</h3>
+
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Tên bài test"
+                            required>
+                        <label for="name">Tên bài test</label>
+                    </div>
+
+                    <div class="form-floating">
+                        <textarea class="form-control" id="description" name="description" placeholder="Mô tả"
+                            style="height: 100px" required></textarea>
+                        <label for="description">Mô tả</label>
+                        <div class="form-text">Mô tả ngắn gọn về bài test này và đối tượng sử dụng.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Độ tuổi phù hợp</label>
+                        <div class="age-range">
+                            <div class="form-floating age-input">
+                                <input type="number" class="form-control" id="minAge" name="minAge" placeholder="Từ"
+                                    min="0" max="18" required>
+                                <label for="minAge">Từ</label>
+                            </div>
+                            <span class="range-separator">-</span>
+                            <div class="form-floating age-input">
+                                <input type="number" class="form-control" id="maxAge" name="maxAge" placeholder="Đến"
+                                    min="0" max="18" required>
+                                <label for="maxAge">Đến</label>
+                            </div>
+                        </div>
+                        <div class="form-text">Xác định khoảng độ tuổi phù hợp cho trẻ làm bài test này.</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">Câu hỏi</h3>
+                    <p class="mb-4">Sau khi tạo bài test, bạn có thể thêm các câu hỏi vào bài test.</p>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Lưu ý: Bài test sẽ được tạo ở trạng thái "Bản nháp". Bạn cần thêm câu hỏi và kích hoạt bài test
+                        để trẻ có thể làm bài.
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/teacher/manage-tests}" class="btn btn-action btn-cancel">
+                        <i class="fas fa-times me-2"></i> Hủy
+                    </a>
+                    <button type="submit" class="btn btn-action btn-submit">
+                        <i class="fas fa-save me-2"></i> Tạo bài test
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Validate form before submit
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const minAge = parseInt(document.getElementById('minAge').value);
+            const maxAge = parseInt(document.getElementById('maxAge').value);
+
+            if (minAge > maxAge) {
+                e.preventDefault();
+                alert('Độ tuổi tối thiểu không thể lớn hơn độ tuổi tối đa.');
+            }
+        });
+    </script>
+</body>
+
+</html>

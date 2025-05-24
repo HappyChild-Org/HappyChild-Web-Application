@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${test.testName}">Bài Test Đánh Giá</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+
+        .test-container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .question-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4CAF50;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .question-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .options-container {
+            padding: 10px 0;
+        }
+
+        .option-item {
+            margin-bottom: 10px;
+        }
+
+        .option-label {
+            padding: 10px 15px;
+            border-radius: 8px;
+            background-color: white;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            display: block;
+            border: 1px solid #ddd;
+        }
+
+        .option-label:hover {
+            background-color: #e9f7ef;
+            transform: scale(1.01);
+        }
+
+        .option-radio {
+            margin-right: 10px;
+        }
+
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2E7D32;
+        }
+
+        .test-progress {
+            margin-bottom: 30px;
+        }
+
+        .btn-submit-test {
+            background-color: #FF5722;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-submit-test:hover {
+            background-color: #E64A19;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .question-image {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .scale-options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .scale-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .scale-option:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .scale-option:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .scale-option:hover,
+        .scale-option.selected {
+            background-color: #e9f7ef;
+        }
+
+        .question-number {
+            font-weight: bold;
+            color: #4CAF50;
+            margin-right: 10px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background-color: #2196F3;
+            color: white;
+            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="test-container">
+            <div class="test-header">
+                <h1 th:text="${test.testName}">Bài Test Đánh Giá Kỹ Năng Giao Tiếp</h1>
+                <p class="lead" th:text="${test.description}">Bài test này giúp đánh giá kỹ năng giao tiếp của trẻ</p>
+            </div>
+
+            <div class="test-progress">
+                <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 0%;" aria-valuenow="0"
+                        aria-valuemin="0" aria-valuemax="100" id="progress-bar">0%</div>
+                </div>
+            </div>
+
+            <form th:action="@{'/student/autism-test/' + ${test.id}}" method="post" th:object="${testForm}"
+                id="test-form">
+                <div class="questions-container">
+                    <div th:each="question, stat : ${questions}" class="question-card"
+                        th:attr="data-question-id=${question.id}">
+                        <div class="category-badge" th:if="${question.category != null}" th:text="${question.category}">
+                            Giao tiếp</div>
+
+                        <div class="question-text">
+                            <span class="question-number" th:text="${stat.count + '.'}">#.</span>
+                            <span th:text="${question.question}">Mô tả câu hỏi ở đây?</span>
+                        </div>
+
+                        <div th:if="${question.imageUrl != null}" class="text-center mb-3">
+                            <img th:src="${question.imageUrl}" class="question-image" alt="Hình ảnh minh họa">
+                        </div>
+
+                        <div class="options-container">
+                            <!-- YES/NO Options -->
+                            <div th:if="${question.answerType == 'YES_NO'}" class="row">
+                                <div class="col-md-6">
+                                    <div class="option-item">
+                                        <label class="option-label">
+                                            <input type="radio" name="answers" th:field="*{answers[__${question.id}__]}"
+                                                value="yes" class="option-radio" required>
+                                            <i class="fas fa-check-circle text-success"></i> Có
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="option-item">
+                                        <label class="option-label">
+                                            <input type="radio" name="answers" th:field="*{answers[__${question.id}__]}"
+                                                value="no" class="option-radio">
+                                            <i class="fas fa-times-circle text-danger"></i> Không
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Multiple Choice Options -->
+                            <div th:if="${question.answerType == 'MULTIPLE_CHOICE'}" class="multiple-choice">
+                                <!-- For simplicity, assume options is a JSON string that we parse -->
+                                <div class="option-item"
+                                    th:each="option : ${T(java.util.Arrays).asList(question.options.split(','))}">
+                                    <label class="option-label">
+                                        <input type="radio" name="answers" th:field="*{answers[__${question.id}__]}"
+                                            th:value="${option}" class="option-radio" required>
+                                        <span th:text="${option}">Option text</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Scale Options -->
+                            <div th:if="${question.answerType == 'SCALE'}" class="scale-options-container">
+                                <div class="scale-options">
+                                    <div class="scale-option" data-value="1">1</div>
+                                    <div class="scale-option" data-value="2">2</div>
+                                    <div class="scale-option" data-value="3">3</div>
+                                    <div class="scale-option" data-value="4">4</div>
+                                    <div class="scale-option" data-value="5">5</div>
+                                </div>
+                                <input type="hidden" th:field="*{answers[__${question.id}__]}" class="scale-input"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 col-md-6 mx-auto mt-4">
+                    <button type="submit" class="btn btn-submit-test">
+                        <i class="fas fa-paper-plane me-2"></i> Nộp Bài Test
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('test-form');
+            const progressBar = document.getElementById('progress-bar');
+            const questions = document.querySelectorAll('.question-card');
+            const totalQuestions = questions.length;
+
+            // Handle scale options
+            const scaleOptions = document.querySelectorAll('.scale-option');
+            scaleOptions.forEach(option => {
+                option.addEventListener('click', function () {
+                    const container = this.closest('.scale-options-container');
+                    const input = container.querySelector('.scale-input');
+                    const value = this.getAttribute('data-value');
+
+                    // Remove selected class from all options in this group
+                    container.querySelectorAll('.scale-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+
+                    // Set value to hidden input
+                    input.value = value;
+
+                    // Update progress
+                    updateProgress();
+                });
+            });
+
+            // Handle radio button changes
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', updateProgress);
+            });
+
+            // Update progress bar
+            function updateProgress() {
+                let answeredCount = 0;
+
+                // Count answered questions
+                questions.forEach(question => {
+                    const questionId = question.getAttribute('data-question-id');
+                    const inputs = question.querySelectorAll('input[type="radio"]:checked, .scale-input');
+
+                    inputs.forEach(input => {
+                        if (input.value) {
+                            answeredCount++;
+                        }
+                    });
+                });
+
+                const progress = Math.round((answeredCount / totalQuestions) * 100);
+                progressBar.style.width = progress + '%';
+                progressBar.textContent = progress + '%';
+                progressBar.setAttribute('aria-valuenow', progress);
+            }
+
+            // Validate form before submission
+            form.addEventListener('submit', function (e) {
+                let isValid = true;
+                questions.forEach(question => {
+                    const questionId = question.getAttribute('data-question-id');
+                    let answered = false;
+
+                    // Check radio buttons
+                    const radios = question.querySelectorAll('input[type="radio"]:checked');
+                    if (radios.length > 0) {
+                        answered = true;
+                    }
+
+                    // Check scale inputs
+                    const scaleInputs = question.querySelectorAll('.scale-input');
+                    scaleInputs.forEach(input => {
+                        if (input.value) {
+                            answered = true;
+                        }
+                    });
+
+                    if (!answered) {
+                        isValid = false;
+                        question.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        question.style.border = '2px solid #dc3545';
+                        setTimeout(() => {
+                            question.style.border = '';
+                        }, 2000);
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Vui lòng trả lời tất cả các câu hỏi trước khi nộp bài.');
+                }
+            });
+
+            // Initial progress update
+            updateProgress();
+        });
+    </script>
+</body>
+
+</html>

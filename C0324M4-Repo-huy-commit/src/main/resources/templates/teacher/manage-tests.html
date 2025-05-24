@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Bài Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .content-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            color: #3F51B5;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: #757575;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .actions-bar {
+            margin-bottom: 30px;
+        }
+
+        .btn-create {
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 25px;
+            padding: 10px 20px;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .btn-create i {
+            margin-right: 8px;
+        }
+
+        .btn-create:hover {
+            background-color: #388E3C;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        .test-card {
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+            margin-bottom: 25px;
+            border: 1px solid #e0e0e0;
+            background-color: white;
+        }
+
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .test-card-body {
+            padding: 20px;
+        }
+
+        .test-card-footer {
+            border-top: 1px solid #e0e0e0;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status-active {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .status-inactive {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+
+        .status-draft {
+            background-color: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-card-action {
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background-color: #FFC107;
+            color: #212121;
+            border: none;
+        }
+
+        .btn-edit:hover {
+            background-color: #FFA000;
+            color: #212121;
+        }
+
+        .btn-toggle {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+        }
+
+        .btn-toggle:hover {
+            background-color: #1976D2;
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: #F44336;
+            color: white;
+            border: none;
+        }
+
+        .btn-delete:hover {
+            background-color: #D32F2F;
+            color: white;
+        }
+
+        .test-info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            color: #757575;
+        }
+
+        .test-info-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #9E9E9E;
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 15px;
+            color: #616161;
+        }
+    </style>
+</head>
+
+<body>
+    <div th:replace="layout :: nav"></div>
+
+    <div class="container">
+        <div class="content-container">
+            <h1 class="page-title">Quản Lý Bài Test</h1>
+            <p class="page-subtitle">Tạo và quản lý các bài test đánh giá tự kỷ</p>
+
+            <div class="actions-bar">
+                <a th:href="@{/teacher/create-test}" class="btn btn-create">
+                    <i class="fas fa-plus-circle"></i> Tạo Bài Test Mới
+                </a>
+            </div>
+
+            <div th:if="${#lists.isEmpty(tests)}" class="empty-state">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>Chưa có bài test nào</h3>
+                <p>Bạn chưa tạo bài test nào. Hãy bắt đầu bằng cách nhấn nút "Tạo Bài Test Mới".</p>
+            </div>
+
+            <div class="row" th:if="${not #lists.isEmpty(tests)}">
+                <div class="col-md-6" th:each="test : ${tests}">
+                    <div class="test-card">
+                        <div class="test-card-header">
+                            <h5 th:text="${test.testName}" class="mb-0 d-inline">Tên Bài Test</h5>
+                            <span th:if="${test.status.name() == 'ACTIVE'}" class="status-badge status-active">
+                                <i class="fas fa-check-circle me-1"></i> Đang hoạt động
+                            </span>
+                            <span th:if="${test.status.name() == 'INACTIVE'}" class="status-badge status-inactive">
+                                <i class="fas fa-times-circle me-1"></i> Không hoạt động
+                            </span>
+                            <span th:if="${test.status.name() == 'DRAFT'}" class="status-badge status-draft">
+                                <i class="fas fa-pencil-alt me-1"></i> Bản nháp
+                            </span>
+                        </div>
+                        <div class="test-card-body">
+                            <p th:text="${test.description}">Mô tả bài test</p>
+                            <div class="test-info">
+                                <div class="test-info-item">
+                                    <i class="fas fa-child"></i> Độ tuổi: <span
+                                        th:text="${test.ageRangeMin} + '-' + ${test.ageRangeMax}">3-12 tuổi</span>
+                                </div>
+                                <div class="test-info-item">
+                                    <i class="fas fa-calendar-alt"></i> Ngày tạo: <span
+                                        th:text="${#temporals.format(test.createdAt, 'dd/MM/yyyy')}">01/01/2023</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="test-card-footer">
+                            <div class="card-actions">
+                                <a href="#" class="btn btn-card-action btn-edit">
+                                    <i class="fas fa-edit me-1"></i> Sửa
+                                </a>
+                                <form th:if="${test.status.name() == 'DRAFT' || test.status.name() == 'INACTIVE'}"
+                                    th:action="@{/teacher/test/{id}/activate(id=${test.id})}" method="post"
+                                    class="d-inline">
+                                    <button type="submit" class="btn btn-card-action btn-toggle">
+                                        <i class="fas fa-check-circle me-1"></i> Kích hoạt
+                                    </button>
+                                </form>
+                                <form th:if="${test.status.name() == 'ACTIVE'}"
+                                    th:action="@{/teacher/test/{id}/deactivate(id=${test.id})}" method="post"
+                                    class="d-inline">
+                                    <button type="submit" class="btn btn-card-action btn-toggle">
+                                        <i class="fas fa-pause-circle me-1"></i> Tạm dừng
+                                    </button>
+                                </form>
+                                <button class="btn btn-card-action btn-delete" data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal">
+                                    <i class="fas fa-trash-alt me-1"></i> Xóa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Xác nhận xóa -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn xóa bài test này không? Hành động này không thể hoàn tác.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <form id="deleteForm" method="post">
+                        <button type="submit" class="btn btn-danger">Xóa</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Cập nhật form xóa khi modal hiển thị
+        const deleteModal = document.getElementById('deleteModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', event => {
+                const button = event.relatedTarget;
+                const testId = button.closest('.test-card').dataset.testId;
+                const deleteForm = document.getElementById('deleteForm');
+                deleteForm.action = `/teacher/test/${testId}/delete`;
+            });
+        }
+    </script>
+</body>
+
+</html>

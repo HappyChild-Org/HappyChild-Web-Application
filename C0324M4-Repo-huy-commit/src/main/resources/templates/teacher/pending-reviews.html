@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Test Đang Chờ Đánh Giá</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .content-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
+        }
+
+        .page-title {
+            color: #3F51B5;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #E0E0E0;
+            padding-bottom: 15px;
+        }
+
+        .student-card {
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-card-header {
+            background-color: #3F51B5;
+            color: white;
+            padding: 15px 20px;
+        }
+
+        .student-card-body {
+            padding: 20px;
+        }
+
+        .student-card-footer {
+            background-color: #f5f5f5;
+            padding: 15px 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .pending-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #FF5722;
+            color: white;
+            border-radius: 50%;
+            margin-left: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .btn-view-results {
+            background-color: #3F51B5;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            transition: all 0.3s;
+        }
+
+        .btn-view-results:hover {
+            background-color: #303F9F;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 0;
+            color: #9E9E9E;
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 15px;
+            color: #616161;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #E8EAF6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            color: #3F51B5;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="content-container">
+            <h1 class="page-title">
+                <i class="fas fa-clipboard-check me-2"></i> Bài Test Đang Chờ Đánh Giá
+            </h1>
+
+            <div th:if="${students.isEmpty()}" class="empty-state">
+                <i class="fas fa-check-circle"></i>
+                <h3>Không có bài test nào đang chờ đánh giá</h3>
+                <p>Tất cả các bài test đã được đánh giá. Bạn có thể kiểm tra lại sau.</p>
+            </div>
+
+            <div class="row" th:if="${!students.isEmpty()}">
+                <div class="col-lg-6" th:each="student : ${students}">
+                    <div class="student-card">
+                        <div class="student-card-header">
+                            <h5 class="m-0">Trẻ Cần Đánh Giá<span class="pending-count">1</span></h5>
+                        </div>
+                        <div class="student-card-body">
+                            <div class="student-info">
+                                <div class="student-avatar" th:text="${student.user.name.substring(0,1).toUpperCase()}">
+                                    H</div>
+                                <div>
+                                    <h5 th:text="${student.user.name}">Hà Hoàng</h5>
+                                    <p class="mb-0 text-muted" th:if="${student.user.email != null}"
+                                        th:text="${student.user.email}">hahoang@example.com</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="student-card-footer">
+                            <a th:href="@{'/teacher/student-results/' + ${student.id}}" class="btn btn-view-results">
+                                <i class="fas fa-eye me-1"></i> Xem Kết Quả Test
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,12 +1,10 @@
 package com.c0324.casestudym5.service.impl;
 
-import com.c0324.casestudym5.dto.InvitedStudentDTO;
-import com.c0324.casestudym5.dto.StudentDTO;
-import com.c0324.casestudym5.model.*;
-import com.c0324.casestudym5.dto.StudentSearchDTO;
-import com.c0324.casestudym5.repository.*;
-import com.c0324.casestudym5.service.FirebaseService;
-import com.c0324.casestudym5.service.StudentService;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,10 +13,23 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import com.c0324.casestudym5.dto.InvitedStudentDTO;
+import com.c0324.casestudym5.dto.StudentDTO;
+import com.c0324.casestudym5.dto.StudentSearchDTO;
+import com.c0324.casestudym5.model.Clazz;
+import com.c0324.casestudym5.model.MultiFile;
+import com.c0324.casestudym5.model.Role;
+import com.c0324.casestudym5.model.Student;
+import com.c0324.casestudym5.model.Teacher;
+import com.c0324.casestudym5.model.User;
+import com.c0324.casestudym5.repository.ClassRepository;
+import com.c0324.casestudym5.repository.MultiFileRepository;
+import com.c0324.casestudym5.repository.RoleRepository;
+import com.c0324.casestudym5.repository.StudentRepository;
+import com.c0324.casestudym5.repository.TeacherRepository;
+import com.c0324.casestudym5.repository.UserRepository;
+import com.c0324.casestudym5.service.FirebaseService;
+import com.c0324.casestudym5.service.StudentService;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -138,9 +149,13 @@ public class StudentServiceImpl implements StudentService {
         if (urlImage == null) {
             throw new Exception("Failed to upload avatar");
         }
+        
         // Tạo một MultiFile và lưu vào DB
-        MultiFile newAvatar = MultiFile.builder().url(urlImage).build();
+        MultiFile newAvatar = new MultiFile();
+        newAvatar.setUrl(urlImage);
+        newAvatar.setData(avatar.getBytes()); // Set the file data
         multiFileRepository.save(newAvatar);
+        
         // Đặt ảnh đại diện cho User
         newUser.setAvatar(newAvatar);
 

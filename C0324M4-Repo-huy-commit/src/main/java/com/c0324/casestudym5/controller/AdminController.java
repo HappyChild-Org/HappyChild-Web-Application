@@ -1,8 +1,16 @@
 package com.c0324.casestudym5.controller;
 
-import java.util.Date;
-import java.util.Optional;
-
+import com.c0324.casestudym5.dto.StudentDTO;
+import com.c0324.casestudym5.dto.StudentSearchDTO;
+import com.c0324.casestudym5.dto.TeacherDTO;
+import com.c0324.casestudym5.dto.UserDTO;
+import com.c0324.casestudym5.model.*;
+import com.c0324.casestudym5.repository.ClassRepository;
+import com.c0324.casestudym5.service.*;
+import com.c0324.casestudym5.service.impl.ClazzService;
+import com.c0324.casestudym5.util.DateTimeUtil;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.data.domain.Page;
@@ -12,32 +20,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.c0324.casestudym5.dto.StudentDTO;
-import com.c0324.casestudym5.dto.StudentSearchDTO;
-import com.c0324.casestudym5.dto.TeacherDTO;
-import com.c0324.casestudym5.dto.UserDTO;
-import com.c0324.casestudym5.model.Student;
-import com.c0324.casestudym5.model.Teacher;
-import com.c0324.casestudym5.repository.ClassRepository;
-import com.c0324.casestudym5.service.FacultyService;
-import com.c0324.casestudym5.service.StudentService;
-import com.c0324.casestudym5.service.TeacherService;
-import com.c0324.casestudym5.service.UserService;
-import com.c0324.casestudym5.service.impl.ClazzService;
-import com.c0324.casestudym5.util.DateTimeUtil;
+import java.util.Date;
+import java.util.Optional;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 
 @RequestMapping("/admin")
 @Controller
@@ -55,6 +44,7 @@ public class AdminController {
                            ClassRepository classRepository, ClazzService clazzService,
                            UserService userService, FacultyService facultyService) {
         this.teacherService = teacherService;
+
         this.studentService = studentService;
         this.classRepository = classRepository;
         this.clazzService = clazzService;
@@ -72,7 +62,7 @@ public class AdminController {
     @GetMapping("/teacher")
     public String getAllTeachers(@RequestParam(required = false) String email,
                                  @RequestParam(required = false) String name,
-                                 @RequestParam(required = false) String phoneNumber,
+                                 @RequestParam(required = false) String phoneNumber,  // Sửa lại đây
                                  @RequestParam(defaultValue = "0") int page,
                                  @RequestParam(defaultValue = "5") int size, Model model) {
         Page<Teacher> teacherPage;
@@ -103,12 +93,13 @@ public class AdminController {
         return "admin/teacher/teacher-list";
     }
 
+
     @GetMapping("/teacher/create")
     public String createTeacherForm(Model model) {
         model.addAttribute("user", new UserDTO());
         model.addAttribute("teacherDTO", new TeacherDTO());
         model.addAttribute("faculties", facultyService.findAll());
-        model.addAttribute("users", userService.findAll()); // Fixed: fillAll -> findAll
+        model.addAttribute("users", userService.findAll());
         return "admin/teacher/teacher-create";
     }
 
@@ -227,6 +218,8 @@ public class AdminController {
         return "redirect:/admin/teacher";
     }
 
+
+
     // CalculateAge
     private int calculateAge(Date dob) {
         if (dob == null) {
@@ -234,6 +227,7 @@ public class AdminController {
         }
         return DateTimeUtil.calculateAge(dob);
     }
+
 
     // Student Functionality
     @GetMapping("/student")
@@ -251,7 +245,7 @@ public class AdminController {
         if (search.getClazzId() != null && search.getClazzId().toString().isEmpty()) {
             search.setClazzId(null);
         }
-        if (search.getName() == null && search.getEmail() == null && search.getClazzId() == null) {
+        if(search.getName() == null && search.getEmail() == null && search.getClazzId() == null) {
             isSearch = false;
         }
         model.addAttribute("pageTitle", "Danh sách sinh viên");
@@ -286,6 +280,15 @@ public class AdminController {
             return "admin/student/student-create";
         }
 
+        if (studentDTO.getDob() != null) {
+            int age = calculateAge(studentDTO.getDob());
+            if (age < 18) {
+                bindingResult.rejectValue("dob", "error.studentDTO", "Sinh viên phải đủ 18 tuổi");
+                model.addAttribute("clazzes", clazzService.getAllClazzes());
+                return "admin/student/student-create";
+            }
+        }
+
         try {
             if (userService.existsByEmail(studentDTO.getEmail())) {
                 bindingResult.rejectValue("email", "error.studentDTO", "Email đã tồn tại.");
@@ -306,6 +309,7 @@ public class AdminController {
             }
 
             studentService.createNewStudent(studentDTO, avatar);
+
             redirectAttributes.addFlashAttribute("toastMessage", "Thêm sinh viên thành công!");
             redirectAttributes.addFlashAttribute("toastType", "success");
         } catch (Exception e) {
@@ -316,6 +320,8 @@ public class AdminController {
 
         return "redirect:/admin/student";
     }
+
+
 
     // Student Edit
     @GetMapping("/edit-student/{id}")
@@ -346,9 +352,18 @@ public class AdminController {
                               Model model,
                               RedirectAttributes redirectAttributes) {
 
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("clazzes", clazzService.getAllClazzes());
             return "admin/student/student-edit";
+        }
+        if (studentDTO.getDob() != null) {
+            int age = calculateAge(studentDTO.getDob());
+            if (age < 18) {
+                bindingResult.rejectValue("dob", "error.studentDTO", "Sinh viên phải đủ 18 tuổi.");
+                model.addAttribute("clazzes", clazzService.getAllClazzes());
+                return "admin/student/student-edit";
+            }
         }
 
         try {
@@ -362,14 +377,12 @@ public class AdminController {
             if (!studentDTO.getCode().equals(existingStudent.get().getCode()) && studentService.existsByCode(studentDTO.getCode())) {
                 bindingResult.rejectValue("code", "error.studentDTO", "Mã sinh viên đã tồn tại.");
                 model.addAttribute("clazzes", clazzService.getAllClazzes());
-                return "admin/student/student-edit";
-            }
+                return "admin/student/student-edit"; }
 
             if (!studentDTO.getPhoneNumber().equals(existingStudent.get().getUser().getPhoneNumber()) && userService.existsByPhoneNumber(studentDTO.getPhoneNumber())) {
                 bindingResult.rejectValue("phoneNumber", "error.studentDTO", "Số điện thoại đã tồn tại.");
                 model.addAttribute("clazzes", clazzService.getAllClazzes());
-                return "admin/student/student-edit";
-            }
+                return "admin/student/student-edit"; }
 
             studentService.editStudent(id, studentDTO, avatar);
             redirectAttributes.addFlashAttribute("toastMessage", "Cập nhật sinh viên thành công!");
@@ -396,6 +409,10 @@ public class AdminController {
         }
         return "redirect:/admin/student";
     }
+
+
+
 }
+
 
 

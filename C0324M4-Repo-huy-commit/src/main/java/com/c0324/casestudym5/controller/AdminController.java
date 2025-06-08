@@ -1,16 +1,8 @@
 package com.c0324.casestudym5.controller;
 
-import com.c0324.casestudym5.dto.StudentDTO;
-import com.c0324.casestudym5.dto.StudentSearchDTO;
-import com.c0324.casestudym5.dto.TeacherDTO;
-import com.c0324.casestudym5.dto.UserDTO;
-import com.c0324.casestudym5.model.*;
-import com.c0324.casestudym5.repository.ClassRepository;
-import com.c0324.casestudym5.service.*;
-import com.c0324.casestudym5.service.impl.ClazzService;
-import com.c0324.casestudym5.util.DateTimeUtil;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
+import java.util.Date;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.data.domain.Page;
@@ -20,12 +12,32 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Date;
-import java.util.Optional;
+import com.c0324.casestudym5.dto.StudentDTO;
+import com.c0324.casestudym5.dto.StudentSearchDTO;
+import com.c0324.casestudym5.dto.TeacherDTO;
+import com.c0324.casestudym5.dto.UserDTO;
+import com.c0324.casestudym5.model.Student;
+import com.c0324.casestudym5.model.Teacher;
+import com.c0324.casestudym5.repository.ClassRepository;
+import com.c0324.casestudym5.service.FacultyService;
+import com.c0324.casestudym5.service.StudentService;
+import com.c0324.casestudym5.service.TeacherService;
+import com.c0324.casestudym5.service.UserService;
+import com.c0324.casestudym5.service.impl.ClazzService;
+import com.c0324.casestudym5.util.DateTimeUtil;
+
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @RequestMapping("/admin")
 @Controller
@@ -274,15 +286,6 @@ public class AdminController {
             return "admin/student/student-create";
         }
 
-        if (studentDTO.getDob() != null) {
-            int age = calculateAge(studentDTO.getDob());
-            if (age < 18) {
-                bindingResult.rejectValue("dob", "error.studentDTO", "Sinh viên phải đủ 18 tuổi");
-                model.addAttribute("clazzes", clazzService.getAllClazzes());
-                return "admin/student/student-create";
-            }
-        }
-
         try {
             if (userService.existsByEmail(studentDTO.getEmail())) {
                 bindingResult.rejectValue("email", "error.studentDTO", "Email đã tồn tại.");
@@ -346,14 +349,6 @@ public class AdminController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("clazzes", clazzService.getAllClazzes());
             return "admin/student/student-edit";
-        }
-        if (studentDTO.getDob() != null) {
-            int age = calculateAge(studentDTO.getDob());
-            if (age < 18) {
-                bindingResult.rejectValue("dob", "error.studentDTO", "Sinh viên phải đủ 18 tuổi.");
-                model.addAttribute("clazzes", clazzService.getAllClazzes());
-                return "admin/student/student-edit";
-            }
         }
 
         try {

@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +16,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.c0324.casestudym5.dto.AutismTestForm;
 import com.c0324.casestudym5.dto.ChildRegistrationDTO;
 import com.c0324.casestudym5.dto.MessageDTO;
-import com.c0324.casestudym5.dto.StudentTestDTO;
 import com.c0324.casestudym5.model.AutismQuestion;
 import com.c0324.casestudym5.model.AutismTest;
 import com.c0324.casestudym5.model.AutismTestAnswer;
@@ -246,6 +245,56 @@ public class AutismTestController {
         }
     }
 
+    @GetMapping("/teacher/manage-tests/{testId}/questions")
+    public String showManageQuestions(@PathVariable Long testId, Model model) {
+        AutismTest test = autismTestService.getTestById(testId);
+        if (test == null) {
+            return "redirect:/error"; // Or an appropriate error page
+        }
+        List<AutismQuestion> questions = autismTestService.getQuestionsForTest(testId);
+        model.addAttribute("test", test);
+        model.addAttribute("questions", questions);
+        return "teacher/manage-questions";
+    }
+
+    @GetMapping("/teacher/manage-tests/{testId}/questions/create")
+    public String showCreateQuestionForm(@PathVariable Long testId, Model model) {
+        AutismTest test = autismTestService.getTestById(testId);
+        if (test == null) {
+            return "redirect:/error";
+        }
+        model.addAttribute("test", test);
+        model.addAttribute("autismQuestion", new AutismQuestion());
+        return "teacher/create-question";
+    }
+
+    @PostMapping("/teacher/manage-tests/{testId}/questions/create")
+    public String createQuestion(@PathVariable Long testId,
+                               @RequestParam String questionText,
+                               @RequestParam String category,
+                               @RequestParam Integer weightScore,
+                               @RequestParam String answerType,
+                               @RequestParam(required = false) String imageUrl,
+                               @RequestParam(required = false) String options,
+                               Model model) {
+        try {
+            autismTestService.addQuestionToTest(testId, questionText, category, weightScore, answerType, imageUrl, options);
+            return "redirect:/autism-test/teacher/manage-tests/" + testId + "/questions";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            AutismTest test = autismTestService.getTestById(testId);
+            model.addAttribute("test", test);
+            model.addAttribute("autismQuestion", new AutismQuestion());
+            return "teacher/create-question";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error creating question: " + e.getMessage());
+            AutismTest test = autismTestService.getTestById(testId);
+            model.addAttribute("test", test);
+            model.addAttribute("autismQuestion", new AutismQuestion());
+            return "teacher/create-question";
+        }
+    }
+
     @GetMapping("/teacher/review-result/{id}")
     public String showReviewResult(@PathVariable Long id, Model model, Principal principal) {
         try {
@@ -313,13 +362,17 @@ public class AutismTestController {
                            @RequestParam Integer minAge,
                            @RequestParam Integer maxAge,
                            Principal principal,
-                           Model model) {
+                           Model model,
+                           RedirectAttributes redirectAttributes) {
         try {
             String email = principal.getName();
             User user = userService.findByEmail(email);
             
             AutismTest test = autismTestService.createTest(name, description, minAge, maxAge, user);
             autismTestService.addPredefinedQuestionsToTest(test.getId());
+            
+            redirectAttributes.addFlashAttribute("toastMessage", "Tạo bài kiểm tra thành công!");
+            redirectAttributes.addFlashAttribute("toastType", "success");
             
             return "redirect:/autism-test/teacher/manage-tests";
         } catch (Exception e) {

@@ -1,17 +1,27 @@
 package com.c0324.casestudym5.controller;
 
-import com.c0324.casestudym5.dto.NotificationDTO;
-import com.c0324.casestudym5.model.*;
-import com.c0324.casestudym5.service.*;
-import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.List;
+import com.c0324.casestudym5.model.Blogs;
+import com.c0324.casestudym5.model.Teacher;
+import com.c0324.casestudym5.model.Topic;
+import com.c0324.casestudym5.model.User;
+import com.c0324.casestudym5.service.BlogsService;
+import com.c0324.casestudym5.service.NotificationService;
+import com.c0324.casestudym5.service.TeacherService;
+import com.c0324.casestudym5.service.TopicService;
+import com.c0324.casestudym5.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class HomeController {
@@ -33,6 +43,11 @@ public class HomeController {
 
     @GetMapping(value = {"/", "/home"})
     public String homePage(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            System.out.println("Authenticated user: " + authentication.getName());
+            System.out.println("Authorities: " + authentication.getAuthorities());
+        }
         Page<Teacher> list = teacherService.getTeachersPage(1,4);
         List<Topic> latestTopics = topicService.getLatestTopics(3);
         List<Blogs> latestBlogs = blogsService.getLatestBlogs(5);

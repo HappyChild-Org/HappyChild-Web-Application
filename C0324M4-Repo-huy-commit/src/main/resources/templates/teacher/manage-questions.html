@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Câu hỏi cho Bài kiểm tra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Quản lý Câu hỏi cho Bài kiểm tra: <span th:text="${test.testName}"></span></h1>
+        <p>Mô tả: <span th:text="${test.description}"></span></p>
+        <p>Độ tuổi: <span th:text="${test.ageRangeMin}"></span> - <span th:text="${test.ageRangeMax}"></span></p>
+
+        <a th:href="@{/autism-test/teacher/manage-tests/{testId}/questions/create(testId=${test.id})}"
+            class="btn btn-primary mb-3">Thêm Câu hỏi Mới</a>
+        <a th:href="@{/autism-test/teacher/manage-tests}" class="btn btn-secondary mb-3">Quay lại Quản lý Bài kiểm
+            tra</a>
+
+        <h2 class="mt-4">Danh sách Câu hỏi</h2>
+        <div th:if="${questions.isEmpty()}">
+            <p>Chưa có câu hỏi nào cho bài kiểm tra này.</p>
+        </div>
+        <ul class="list-group" th:if="${!questions.isEmpty()}">
+            <li class="list-group-item" th:each="question : ${questions}">
+                <p><strong>Câu hỏi:</strong> <span th:text="${question.question}"></span></p>
+                <p><strong>Thể loại:</strong> <span th:text="${question.category}"></span></p>
+                <p><strong>Điểm trọng số:</strong> <span th:text="${question.weightScore}"></span></p>
+                <p><strong>Loại câu trả lời:</strong> <span th:text="${question.answerType}"></span></p>
+                <p th:if="${question.imageUrl}"><strong>Ảnh:</strong> <a th:href="${question.imageUrl}"
+                        target="_blank">Xem ảnh</a></p>
+                <p th:if="${question.options}"><strong>Tùy chọn:</strong> <span th:text="${question.options}"></span>
+                </p>
+                <!-- Bạn có thể thêm nút chỉnh sửa/xóa ở đây sau -->
+            </li>
+        </ul>
+    </div>
+</body>
+
+</html>

@@ -69,9 +69,11 @@ public class AutismTestService {
     }
 
     public List<AutismQuestion> getQuestionsForTest(Long testId) {
-        // In a real implementation, there should be a relation between tests and questions
-        // For this implementation, we'll return all questions
-        return questionRepository.findAll();
+        AutismTest test = testRepository.findById(testId).orElse(null);
+        if (test == null) {
+            return new ArrayList<>();
+        }
+        return test.getQuestions();
     }
 
     public Map<String, List<AutismQuestion>> groupQuestionsByCategory(List<AutismQuestion> questions) {
@@ -340,5 +342,24 @@ public class AutismTestService {
 
         addQuestion("Are there any other abnormalities in children ?",
                    "Other extraordinary signs", 1, "YES_NO");
+    }
+
+    @Transactional
+    public AutismQuestion addQuestionToTest(Long testId, String questionText, String category, Integer weightScore, String answerType, String imageUrl, String options) {
+        AutismTest test = testRepository.findById(testId).orElse(null);
+        if (test == null) {
+            throw new IllegalArgumentException("Test not found");
+        }
+
+        AutismQuestion question = new AutismQuestion();
+        question.setQuestion(questionText);
+        question.setCategory(category);
+        question.setWeightScore(weightScore);
+        question.setAnswerType(answerType);
+        question.setImageUrl(imageUrl);
+        question.setOptions(options);
+        question.setAutismTest(test);
+
+        return questionRepository.save(question);
     }
 }

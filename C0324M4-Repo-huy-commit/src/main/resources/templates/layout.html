@@ -37,37 +37,46 @@
                         <li class="nav-item"><a class="nav-link" href="/">TIN TỨC</a></li>
                         <li class="nav-item dropdown" sec:authorize="hasRole('STUDENT')">
                             <a class="nav-link dropdown-toggle" href="#" id="studentDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
+                                data-bs-toggle="dropdown" aria-expanded="false">
                                 TRẺ
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="studentDropdown">
                                 <li><a class="dropdown-item" th:href="@{/student/list-teacher}">ĐĂNG KÝ GVHD</a></li>
                                 <li>
-                                    <a class="dropdown-item" th:href="${isInTeam ? '/student/info-team' : '/student/menu'}">
+                                    <a class="dropdown-item"
+                                        th:href="${isInTeam ? '/student/info-team' : '/student/menu'}">
                                         <span th:text="${isInTeam ? 'NHÓM CỦA TÔI' : 'ĐĂNG KÝ NHÓM'}"></span>
                                     </a>
                                 </li>
                                 <li><a class="dropdown-item" th:href="@{/student/progress}">QUẢN LÝ TIẾN ĐỘ</a></li>
-                                <li><a class="dropdown-item" th:href="@{/student/documents}">THÔNG TIN HƯỚNG DẪN</a></li>
+                                <li><a class="dropdown-item" th:href="@{/student/documents}">THÔNG TIN HƯỚNG DẪN</a>
+                                </li>
                                 <li><a class="dropdown-item" th:href="@{/autism-test/tests}">BÀI KIỂM TRA TỰ KỶ</a></li>
                                 <li><a class="dropdown-item" th:href="@{/autism-test/results}">KẾT QUẢ KIỂM TRA</a></li>
-                                <li><a class="dropdown-item" th:href="@{/autism-test/profile}">THÔNG TIN CÁ NHÂN</a></li>
+                                <li><a class="dropdown-item" th:href="@{/autism-test/profile}">THÔNG TIN CÁ NHÂN</a>
+                                </li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown" sec:authorize="hasRole('TEACHER')">
                             <a class="nav-link dropdown-toggle" href="#" id="teacherDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
+                                data-bs-toggle="dropdown" aria-expanded="false">
                                 CHUYÊN GIA
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="teacherDropdown">
                                 <li><a class="dropdown-item" href="blogs">ĐĂNG THÔNG BÁO</a></li>
+                                <li><a class="dropdown-item" th:href="@{/autism-test/teacher/create-test}">TẠO BÀI KIỂM
+                                        TRA MỚI</a></li>
                                 <li><a class="dropdown-item" href="/topics">DANH SÁCH ĐỀ TÀI</a></li>
                                 <li><a class="dropdown-item" th:href="@{/teacher/topics}">KIỂM DUYỆT ĐỀ TÀI</a></li>
-                                <li><a class="dropdown-item" th:href="@{/teacher/student-list}">DANH SÁCH SINH VIÊN</a></li>
+                                <li><a class="dropdown-item" th:href="@{/teacher/student-list}">DANH SÁCH SINH VIÊN</a>
+                                </li>
                                 <li><a class="dropdown-item" th:href="@{/teacher/team}">QUẢN LÝ NHÓM SINH VIÊN</a></li>
-                                <li><a class="dropdown-item" th:href="@{/teacher/documents/upload}">TÀI LIỆU HƯỚNG DẪN</a></li>
-                                <li><a class="dropdown-item" th:href="@{/autism-test/teacher/manage-tests}">QUẢN LÝ BÀI KIỂM TRA</a></li>
-                                <li><a class="dropdown-item" th:href="@{/autism-test/teacher/pending-reviews}">ĐÁNH GIÁ KẾT QUẢ</a></li>
+                                <li><a class="dropdown-item" th:href="@{/teacher/documents/upload}">TÀI LIỆU HƯỚNG
+                                        DẪN</a></li>
+                                <li><a class="dropdown-item" th:href="@{/autism-test/teacher/manage-tests}">QUẢN LÝ BÀI
+                                        KIỂM TRA</a></li>
+                                <li><a class="dropdown-item" th:href="@{/autism-test/teacher/pending-reviews}">ĐÁNH GIÁ
+                                        KẾT QUẢ</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown" sec:authorize="hasRole('ADMIN')">

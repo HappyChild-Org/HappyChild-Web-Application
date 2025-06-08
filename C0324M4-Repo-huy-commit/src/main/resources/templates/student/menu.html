@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Student Menu</title>
+</head>
+<body>
+    <section class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4">Welcome, <span th:text="${student.user.name}">Student Name</span>!</h2>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Autism Tests</h5>
+                        <p class="card-text">Take autism screening tests appropriate for your age group.</p>
+                        <a th:href="@{/student/autism-tests}" class="btn btn-primary">View Tests</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Test Results</h5>
+                        <p class="card-text">View your previous test results and progress.</p>
+                        <a th:href="@{/student/test-results}" class="btn btn-primary">View Results</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Profile</h5>
+                        <p class="card-text">View and update your personal information.</p>
+                        <a th:href="@{/student/profile}" class="btn btn-primary">View Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html> 

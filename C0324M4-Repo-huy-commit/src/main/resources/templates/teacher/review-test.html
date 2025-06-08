@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đánh Giá Bài Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .content-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            color: #3F51B5;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: #757575;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .result-header {
+            background-color: #E8EAF6;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .result-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .student-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #C5CAE9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            color: #3F51B5;
+            font-size: 1.2rem;
+        }
+
+        .test-info {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .test-date {
+            color: #757575;
+            font-size: 0.9rem;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #FF5722;
+            text-align: center;
+        }
+
+        .score-container {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: #757575;
+        }
+
+        .answers-container {
+            margin-bottom: 30px;
+        }
+
+        .answer-card {
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #E0E0E0;
+            margin-bottom: 20px;
+        }
+
+        .answer-header {
+            background-color: #F5F5F5;
+            padding: 15px 20px;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .answer-body {
+            padding: 20px;
+        }
+
+        .answer-category {
+            display: inline-block;
+            background-color: #C5CAE9;
+            color: #3F51B5;
+            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+        }
+
+        .answer-value {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .answer-yes {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .answer-no {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+
+        .answers-summary {
+            background-color: #FFF8E1;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .btn-submit {
+            background-color: #3949AB;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 30px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #303F9F;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-cancel {
+            background-color: #E0E0E0;
+            color: #424242;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 30px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background-color: #BDBDBD;
+            transform: translateY(-2px);
+        }
+
+        .form-floating label {
+            color: #757575;
+        }
+
+        .form-control:focus {
+            border-color: #3F51B5;
+            box-shadow: 0 0 0 0.25rem rgba(63, 81, 181, 0.25);
+        }
+
+        .review-actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .review-form {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .readonly-mode .review-form {
+            background-color: #fff;
+            border: 1px solid #E0E0E0;
+        }
+
+        .readonly-note {
+            background-color: #FFFDE7;
+            border-left: 4px solid #FFC107;
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .note-title {
+            font-weight: bold;
+            color: #F57F17;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="content-container">
+            <div class="mb-4">
+                <h1 class="page-title">
+                    <span th:if="${result.status.name() == 'PENDING_REVIEW'}">Đánh Giá Bài Test</span>
+                    <span th:if="${result.status.name() == 'REVIEWED'}">Chi Tiết Bài Test</span>
+                </h1>
+                <p class="page-subtitle" th:text="${result.test.testName}">Test Đánh Giá Kỹ Năng Giao Tiếp</p>
+                <a th:href="@{'/teacher/student-results/' + ${result.student.id}}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Quay Lại Kết Quả
+                </a>
+            </div>
+
+            <div class="result-header">
+                <div class="result-meta">
+                    <div class="student-info">
+                        <div class="student-avatar" th:text="${result.student.user.name.substring(0,1).toUpperCase()}">H
+                        </div>
+                        <div>
+                            <h5 th:text="${result.student.user.name}">Hoàng Hà</h5>
+                            <p class="mb-0 test-date">
+                                <i class="far fa-calendar me-1"></i>
+                                Hoàn thành: <span
+                                    th:text="${#temporals.format(result.completedAt, 'dd/MM/yyyy HH:mm')}">10/10/2023
+                                    15:30</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="score-container">
+                        <div class="score-display" th:text="${result.totalScore}">75</div>
+                        <div class="score-label">ĐIỂM</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="answers-summary">
+                <h5><i class="fas fa-chart-pie me-2"></i> Tổng Quan</h5>
+                <p>
+                    Trẻ đã hoàn thành bài test với <strong th:text="${result.totalScore}">75</strong> điểm.
+                    Dưới đây là chi tiết câu trả lời của trẻ theo các câu hỏi trong bài test.
+                </p>
+            </div>
+
+            <div class="answers-container">
+                <h5 class="mb-4"><i class="fas fa-list-ul me-2"></i> Chi Tiết Câu Trả Lời</h5>
+
+                <div class="row">
+                    <div class="col-md-6" th:each="answer : ${answers}">
+                        <div class="answer-card">
+                            <div class="answer-header">
+                                <span class="answer-category" th:if="${answer.question.category != null}"
+                                    th:text="${answer.question.category}">Giao tiếp</span>
+                                <h6 th:text="${answer.question.question}">Trẻ có khó khăn khi tương tác với người lạ
+                                    không?</h6>
+                            </div>
+                            <div class="answer-body">
+                                <!-- YES/NO answers -->
+                                <div th:if="${answer.question.answerType == 'YES_NO'}">
+                                    <div th:if="${answer.answerValue == 'yes'}" class="d-flex align-items-center">
+                                        <span class="answer-value answer-yes"><i class="fas fa-check"></i></span>
+                                        <span><strong>Có</strong></span>
+                                    </div>
+                                    <div th:if="${answer.answerValue == 'no'}" class="d-flex align-items-center">
+                                        <span class="answer-value answer-no"><i class="fas fa-times"></i></span>
+                                        <span><strong>Không</strong></span>
+                                    </div>
+                                </div>
+
+                                <!-- Multiple choice or scale answers -->
+                                <div th:if="${answer.question.answerType != 'YES_NO'}">
+                                    <p>
+                                        <strong>Câu trả lời: </strong>
+                                        <span th:text="${answer.answerValue}">Option A</span>
+                                    </p>
+                                </div>
+
+                                <div class="mt-2">
+                                    <p class="mb-0 text-muted">
+                                        <small>
+                                            <i class="fas fa-info-circle me-1"></i> Điểm cho câu trả lời:
+                                            <span th:text="${answer.score}">5</span>
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:classappend="${result.status.name() == 'REVIEWED'} ? 'readonly-mode' : ''">
+                <h5><i class="fas fa-comment-medical me-2"></i> Đánh Giá Của Chuyên Gia</h5>
+
+                <!-- Read-only mode for viewed results -->
+                <div th:if="${result.status.name() == 'REVIEWED'}" class="readonly-note mt-3">
+                    <div class="note-title">Nhận xét:</div>
+                    <p th:text="${result.teacherNotes}">
+                        Trẻ có biểu hiện khó khăn trong giao tiếp xã hội, cần được hỗ trợ thêm trong các tình huống
+                        tương tác nhóm...
+                    </p>
+                    <div th:if="${result.reviewedAt != null}">
+                        <small>
+                            <i class="fas fa-calendar-check me-1"></i> Đánh giá lúc:
+                            <span th:text="${#temporals.format(result.reviewedAt, 'dd/MM/yyyy HH:mm')}">13/10/2023
+                                10:15</span>
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Editable form for pending reviews -->
+                <form th:if="${result.status.name() == 'PENDING_REVIEW'}"
+                    th:action="@{'/teacher/review-test/' + ${result.id}}" method="post" class="review-form">
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" placeholder="Nhập đánh giá của bạn" id="notes" name="notes"
+                            style="height: 200px" required></textarea>
+                        <label for="notes">Nhận xét và đánh giá về kết quả test của trẻ</label>
+                    </div>
+                    <div class="review-actions">
+                        <button type="submit" class="btn btn-submit">
+                            <i class="fas fa-paper-plane me-2"></i> Gửi Đánh Giá
+                        </button>
+                        <a th:href="@{'/teacher/student-results/' + ${result.student.id}}" class="btn btn-cancel ms-2">
+                            Hủy
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Manage Tests</title>
+</head>
+<body>
+    <section>
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Manage Tests</h2>
+                <a th:href="@{/autism-test/teacher/create-test}" class="btn btn-primary">Create New Test</a>
+            </div>
+
+            <div class="row">
+                <div th:each="test : ${tests}" class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${test.name}">Test Name</h5>
+                            <p class="card-text" th:text="${test.description}">Test Description</p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    Age Range: <span th:text="${test.minAge}">0</span> - <span th:text="${test.maxAge}">0</span> years
+                                </small>
+                            </p>
+                            <p class="card-text">
+                                Status: <span th:text="${test.status}">Status</span>
+                            </p>
+                            <div class="btn-group">
+                                <form th:if="${test.status == 'INACTIVE'}" th:action="@{/autism-test/teacher/test/{id}/activate(id=${test.id})}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-success">Activate</button>
+                                </form>
+                                <form th:if="${test.status == 'ACTIVE'}" th:action="@{/autism-test/teacher/test/{id}/deactivate(id=${test.id})}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-warning">Deactivate</button>
+                                </form>
+                                <form th:action="@{/autism-test/teacher/test/{id}/delete(id=${test.id})}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this test?')">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

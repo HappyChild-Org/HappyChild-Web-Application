@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Student List</title>
+</head>
+<body>
+    <section class="container mt-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2>Student List</h2>
+            </div>
+        </div>
+
+        <!-- Search Form -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <form th:action="@{/teacher/student-list}" method="get" class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" th:value="${search.name}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" th:value="${search.email}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="clazzId" class="form-label">Class</label>
+                                <select class="form-select" id="clazzId" name="clazzId">
+                                    <option value="">All Classes</option>
+                                    <option th:each="clazz : ${classes}"
+                                            th:value="${clazz.id}"
+                                            th:text="${clazz.name}"
+                                            th:selected="${search.clazzId != null and search.clazzId == clazz.id}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                                <a th:href="@{/teacher/student-list}" class="btn btn-secondary">Clear</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Student List -->
+        <div class="row">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Class</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${students.empty}">
+                                <td colspan="5" class="text-center">No students found</td>
+                            </tr>
+                            <tr th:each="student : ${students}">
+                                <td th:text="${student.user.name}">Student Name</td>
+                                <td th:text="${student.user.email}">student@email.com</td>
+                                <td th:text="${student.clazz.name}">Class Name</td>
+                                <td th:text="${student.user.phoneNumber}">Phone Number</td>
+                                <td>
+                                    <a th:href="@{/student/{id}(id=${student.id})}" class="btn btn-info btn-sm">View</a>
+                                    <a th:href="@{/student/{id}/test-results(id=${student.id})}" class="btn btn-primary btn-sm">Test Results</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav th:if="${students.totalPages > 1}">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <a class="page-link" th:href="@{/teacher/student-list(page=${currentPage - 1}, name=${search.name}, email=${search.email}, clazzId=${search.clazzId})}">Previous</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, students.totalPages - 1)}"
+                            th:classappend="${currentPage == i} ? 'active'">
+                            <a class="page-link" th:href="@{/teacher/student-list(page=${i}, name=${search.name}, email=${search.email}, clazzId=${search.clazzId})}"
+                               th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == students.totalPages - 1} ? 'disabled'">
+                            <a class="page-link" th:href="@{/teacher/student-list(page=${currentPage + 1}, name=${search.name}, email=${search.email}, clazzId=${search.clazzId})}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

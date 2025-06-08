@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Review Test Result</title>
+</head>
+<body>
+    <section>
+        <div class="container mt-4">
+            <h2>Review Test Result</h2>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${result.test.name}">Test Name</h5>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            Submitted on: <span th:text="${#temporals.format(result.submittedAt, 'dd/MM/yyyy HH:mm')}">Date</span>
+                        </small>
+                    </p>
+                    <p class="card-text">
+                        Student: <span th:text="${result.student.fullName}">Student Name</span>
+                    </p>
+                </div>
+            </div>
+
+            <div th:each="category : ${answersByCategory}" class="card mb-4">
+                <div class="card-header">
+                    <h4 th:text="${category.key}">Category Name</h4>
+                </div>
+                <div class="card-body">
+                    <div th:each="answer : ${category.value}" class="mb-3">
+                        <p th:text="${answer.question.content}">Question content</p>
+                        <p>
+                            Student's Answer: <span th:text="${answer.answer}">Answer</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <form th:action="@{/autism-test/teacher/review-result/{id}(id=${result.id})}" method="post">
+                <div class="form-group mb-3">
+                    <label for="notes">Review Notes</label>
+                    <textarea class="form-control" id="notes" name="notes" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+                <a th:href="@{/autism-test/teacher/pending-reviews}" class="btn btn-secondary">Back to Pending Reviews</a>
+            </form>
+        </div>
+    </section>
+</body>
+</html> 

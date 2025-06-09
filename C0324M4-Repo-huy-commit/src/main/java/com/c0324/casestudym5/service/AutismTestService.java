@@ -54,29 +54,34 @@ public class AutismTestService {
     }
 
     public List<AutismTest> getTestsForChildAge(int age) {
-        List<AutismTest> ageSpecificTests = testRepository.findByAgeRange(age);
-
-        // If no tests are found for the specific age, return all active tests
-        if (ageSpecificTests.isEmpty()) {
-            return getActiveTests();
+        if (age <= 0) {
+            return new ArrayList<>();
         }
-
-        return ageSpecificTests;
+        return testRepository.findByAgeRange(age);
     }
 
     public AutismTest getTestById(Long testId) {
+        if (testId == null) {
+            return null;
+        }
         return testRepository.findById(testId).orElse(null);
     }
 
     public List<AutismQuestion> getQuestionsForTest(Long testId) {
+        if (testId == null) {
+            return new ArrayList<>();
+        }
         AutismTest test = testRepository.findById(testId).orElse(null);
-        if (test == null) {
+        if (test == null || test.getStatus() != AutismTest.TestStatus.ACTIVE) {
             return new ArrayList<>();
         }
         return test.getQuestions();
     }
 
     public Map<String, List<AutismQuestion>> groupQuestionsByCategory(List<AutismQuestion> questions) {
+        if (questions == null || questions.isEmpty()) {
+            return new HashMap<>();
+        }
         return questions.stream()
                 .collect(Collectors.groupingBy(question ->
                     question.getCategory() != null ? question.getCategory() : "Other"));
@@ -90,6 +95,9 @@ public class AutismTestService {
     }
 
     public List<AutismTestResult> getResultsForStudentAndTest(Long userId, Long testId) {
+        if (userId == null || testId == null) {
+            return new ArrayList<>();
+        }
         User student = userRepository.findById(userId).orElse(null);
         AutismTest test = testRepository.findById(testId).orElse(null);
 
@@ -102,11 +110,25 @@ public class AutismTestService {
 
     @Transactional
     public Long submitTest(Long userId, AutismTestForm form) {
+        if (userId == null || form == null || form.getTestId() == null) {
+            throw new IllegalArgumentException("Invalid input parameters");
+        }
+
         User student = userRepository.findById(userId).orElse(null);
         AutismTest test = testRepository.findById(form.getTestId()).orElse(null);
 
         if (student == null || test == null) {
             throw new IllegalArgumentException("User or Test not found");
+        }
+
+        if (test.getStatus() != AutismTest.TestStatus.ACTIVE) {
+            throw new IllegalArgumentException("Test is not active");
+        }
+
+        // Check if student has already taken this test
+        List<AutismTestResult> existingResults = getResultsForStudentAndTest(userId, form.getTestId());
+        if (!existingResults.isEmpty()) {
+            throw new IllegalArgumentException("Student has already taken this test");
         }
 
         // Create a new test result
@@ -116,15 +138,18 @@ public class AutismTestService {
         result.setCompletedAt(LocalDateTime.now());
         result.setStatus(AutismTestResult.TestResultStatus.PENDING_REVIEW);
 
-        // Calculate score (this is a simplified calculation)
+        // Calculate score
         int totalScore = 0;
-
         resultRepository.save(result);
 
         // Save answers and calculate score
         for (Map.Entry<Long, String> entry : form.getAnswers().entrySet()) {
             Long questionId = entry.getKey();
             String answer = entry.getValue();
+
+            if (questionId == null || answer == null) {
+                continue;
+            }
 
             AutismQuestion question = questionRepository.findById(questionId).orElse(null);
             if (question != null) {
@@ -133,7 +158,6 @@ public class AutismTestService {
                 testAnswer.setQuestion(question);
                 testAnswer.setAnswerValue(answer);
 
-                // Simplified scoring logic - adjust based on your requirements
                 int answerScore = calculateAnswerScore(question, answer);
                 testAnswer.setScore(answerScore);
                 totalScore += answerScore;

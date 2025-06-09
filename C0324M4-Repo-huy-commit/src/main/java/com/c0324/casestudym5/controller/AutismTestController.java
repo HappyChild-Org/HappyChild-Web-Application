@@ -94,28 +94,45 @@ public class AutismTestController {
     }
 
     @GetMapping("/test/{id}")
-    public String showTest(@PathVariable Long id, Model model, Principal principal) {
+    public String showTest(@PathVariable Long id, Model model, Principal principal, RedirectAttributes redirectAttributes) {
         try {
             String email = principal.getName();
             User user = userService.findByEmail(email);
+            if (user == null) {
+                redirectAttributes.addFlashAttribute("error", "User not found");
+                return "redirect:/error";
+            }
+
             Student student = studentService.findStudentByUserId(user.getId());
-            
             if (student == null) {
+                redirectAttributes.addFlashAttribute("error", "Student profile not found");
                 return "redirect:/error";
             }
             
             // Check if student has already taken this test
             List<AutismTestResult> existingResults = autismTestService.getResultsForStudentAndTest(user.getId(), id);
             if (!existingResults.isEmpty()) {
+                redirectAttributes.addFlashAttribute("message", "You have already taken this test");
                 return "redirect:/autism-test/results";
             }
             
             AutismTest test = autismTestService.getTestById(id);
             if (test == null) {
+                redirectAttributes.addFlashAttribute("error", "Test not found");
                 return "redirect:/error";
+            }
+
+            if (test.getStatus() != AutismTest.TestStatus.ACTIVE) {
+                redirectAttributes.addFlashAttribute("error", "This test is not available");
+                return "redirect:/autism-test/tests";
             }
             
             List<AutismQuestion> questions = autismTestService.getQuestionsForTest(id);
+            if (questions.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "No questions found for this test");
+                return "redirect:/autism-test/tests";
+            }
+            
             Map<String, List<AutismQuestion>> questionsByCategory = autismTestService.groupQuestionsByCategory(questions);
             
             model.addAttribute("test", test);
@@ -125,8 +142,8 @@ public class AutismTestController {
             
             return "student/take-test";
         } catch (Exception e) {
-            model.addAttribute("error", "Error loading test: " + e.getMessage());
-            return "error";
+            redirectAttributes.addFlashAttribute("error", "Error loading test: " + e.getMessage());
+            return "redirect:/error";
         }
     }
 

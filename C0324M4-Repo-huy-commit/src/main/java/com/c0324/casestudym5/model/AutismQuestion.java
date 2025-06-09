@@ -9,6 +9,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+
+// model tạo câu hỏi
 @Entity
 @Table(name = "autism_questions")
 public class AutismQuestion {

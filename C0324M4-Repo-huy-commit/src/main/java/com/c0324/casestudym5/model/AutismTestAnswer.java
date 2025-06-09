@@ -9,6 +9,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+
+// model cho ra cu trả lười
 @Entity
 @Table(name = "autism_test_answers")
 public class AutismTestAnswer {

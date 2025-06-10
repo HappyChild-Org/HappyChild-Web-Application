@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -174,7 +174,7 @@
                                 <span class="category-badge" th:text="${category.key}">Category</span>
                                 <p class="question-text">
                                     <span class="question-number" th:text="${stat.count}">1.</span>
-                                    <span th:text="${question.content}">Question content</span>
+                                    <span th:text="${question.question}">Question content</span>
                                 </p>
                                 <div class="options-container">
                                     <div class="form-check">

@@ -68,14 +68,12 @@ public class AutismTestService {
     }
 
     public List<AutismQuestion> getQuestionsForTest(Long testId) {
-        if (testId == null) {
-            return new ArrayList<>();
-        }
+        if (testId == null) return new ArrayList<>();
         AutismTest test = testRepository.findById(testId).orElse(null);
         if (test == null || test.getStatus() != AutismTest.TestStatus.ACTIVE) {
             return new ArrayList<>();
         }
-        return test.getQuestions();
+        return questionRepository.findByAutismTestId(testId);
     }
 
     public Map<String, List<AutismQuestion>> groupQuestionsByCategory(List<AutismQuestion> questions) {
@@ -242,6 +240,12 @@ public class AutismTestService {
         if (creator == null) {
             throw new IllegalArgumentException("User not found");
         }
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Test name is required");
+        }
+        if (minAge == null || maxAge == null || minAge < 0 || maxAge < 0 || minAge > maxAge) {
+            throw new IllegalArgumentException("Invalid age range");
+        }
 
         AutismTest test = new AutismTest();
         test.setTestName(name);
@@ -299,73 +303,22 @@ public class AutismTestService {
 
     @Transactional
     public void addPredefinedQuestionsToTest(Long testId) {
-        // Add the predefined questions from the requirements
-
-        // Category 1: Communication - Language
-        addQuestion("Does your baby show signs of \"never making any sounds\"?",
-                   "Communication - Language", 2, "YES_NO");
-
-        addQuestion("Does your baby show signs of \"not knowing how to express himself/herself when hungry, wet with urine, or passing stools\" ?",
-                   "Communication - Language", 2, "YES_NO");
-
-        addQuestion("Does your baby show signs of \"not blinking/flinching when there is a loud noise\" ?",
-                   "Communication - Language", 1, "YES_NO");
-
-        // Category 2: Gross motor
-        addQuestion("Does your baby have reduced movement in his/her hands/feet or overall body weakness ?",
-                   "Gross motor", 2, "YES_NO");
-
-        addQuestion("Is your baby experiencing any limited mobility in the major joints? (Hip, knee, ankle, shoulder, elbow, wrist, or neck pain ?)",
-                   "Gross motor", 2, "YES_NO");
-
-        addQuestion("Does your baby have any foot deformities? (Extra/missing toes, partial foot amputation, clubfoot, shortening)",
-                   "Gross motor", 3, "YES_NO");
-
-        // Category 3: Fine motor
-        addQuestion("Does your baby have any hand deformities? (Extra/missing fingers, partial amputation, clubhand, shortening)",
-                   "Fine motor", 3, "YES_NO");
-
-        addQuestion("Does your baby have any restrictions in bending/extending their fingers ?",
-                   "Fine motor", 2, "YES_NO");
-
-        addQuestion("Is your baby's hand usually tightly closed more than normal ?",
-                   "Fine motor", 1, "YES_NO");
-
-        // Category 4: Imitate and learn
-        addQuestion("Does your baby have an unusual facial expression or a facial deformity ?",
-                   "Imitate and learn", 2, "YES_NO");
-
-        addQuestion("Does your baby have any abnormalities in the head? (such as bone deformities, cranial tumors, or absence of the fontanelle)",
-                   "Imitate and learn", 3, "YES_NO");
-
-        addQuestion("Does your baby show signs of \"not knowing how to smile (smiling while asleep)\" ?",
-                   "Imitate and learn", 2, "YES_NO");
-
-        // Category 5: Personal - Social
-        addQuestion("Does your baby have difficulty with bowel movements or urination? (such as inability to pass stool or difficulty urinating)",
-                   "Personal - Social", 2, "YES_NO");
-
-        addQuestion("Does your baby cry excessively throughout the day and night ?",
-                   "Personal - Social", 1, "YES_NO");
-
-        addQuestion("Does your baby have difficulty with sucking, swallowing, or drinking ?",
-                   "Personal - Social", 2, "YES_NO");
-
-        // Category 6: Other extraordinary signs
-        addQuestion("Does your baby have seizures ?",
-                   "Other extraordinary signs", 3, "YES_NO");
-
-        addQuestion("Does your baby have any abnormalities in the face (lips, cleft palate), neck, spine, arms, or legs ?",
-                   "Other extraordinary signs", 2, "YES_NO");
-
-        addQuestion("Does your baby have any abnormalities in the ears ? For example, missing earlobes or ear canals",
-                   "Other extraordinary signs", 2, "YES_NO");
-
-        addQuestion("Does your baby have any abnormalities in the eyes ? (Crossed eyes, drooping eyelids, bulging eyes.)",
-                   "Other extraordinary signs", 2, "YES_NO");
-
-        addQuestion("Are there any other abnormalities in children ?",
-                   "Other extraordinary signs", 1, "YES_NO");
+        testRepository.findById(testId).orElseThrow(() -> new IllegalArgumentException("Test not found"));
+        
+        // Thêm các câu hỏi mẫu
+        addQuestionToTest(testId, "Does your baby show signs of \"never making any sounds\"?", "Communication - Language", 2, "YES_NO", null, null);
+        addQuestionToTest(testId, "Does your baby show signs of \"not knowing how to express himself/herself when hungry, wet with urine, or passing stools\"?", "Communication - Language", 2, "YES_NO", null, null);
+        addQuestionToTest(testId, "Does your baby show signs of \"not blinking/flinching when there is a loud noise\"?", "Communication - Language", 1, "YES_NO", null, null);
+        addQuestionToTest(testId, "Does your baby have reduced movement in his/her body?", "Gross Motor", 2, "YES_NO", null, null);
+        addQuestionToTest(testId, "Does your baby have any foot deformities? (Ex: flat foot, clubfoot)", "Gross Motor", 3, "YES_NO", null, null);
+        addQuestionToTest(testId, "Does your baby have any hand deformities? (Ex: extra fingers)", "Fine Motor", 3, "YES_NO", null, null);
+        addQuestionToTest(testId, "Does your baby have any restrictions in bending his/her fingers?", "Fine Motor", 2, "YES_NO", null, null);
+        addQuestionToTest(testId, "Does your baby have an unusual facial expression?", "Imitate and Learn", 2, "YES_NO", null, null);
+        addQuestionToTest(testId, "Does your baby have any abnormalities in the head?", "Imitate and Learn", 3, "YES_NO", null, null);
+        addQuestionToTest(testId, "Does your baby have difficulty with bowel movements?", "Personal - Social", 2, "YES_NO", null, null);
+        addQuestionToTest(testId, "Does your baby cry excessively with sucking, swallowing?", "Personal - Social", 2, "YES_NO", null, null);
+        addQuestionToTest(testId, "Does your baby have seizures?", "Other extraordinary signs", 3, "YES_NO", null, null);
+        addQuestionToTest(testId, "Does your baby have any abnormalities in the face?", "Other extraordinary signs", 2, "YES_NO", null, null);
     }
 
     @Transactional
@@ -385,5 +338,21 @@ public class AutismTestService {
         question.setAutismTest(test);
 
         return questionRepository.save(question);
+    }
+
+    // Lấy các câu hỏi chưa gán vào test nào
+    public List<AutismQuestion> getCommonQuestions() {
+        return questionRepository.findByAutismTestIsNull();
+    }
+
+    // Gán các câu hỏi vào test
+    @org.springframework.transaction.annotation.Transactional
+    public void addQuestionsToTest(Long testId, List<Long> questionIds) {
+        AutismTest test = testRepository.findById(testId).orElseThrow();
+        List<AutismQuestion> questions = questionRepository.findAllById(questionIds);
+        for (AutismQuestion q : questions) {
+            q.setAutismTest(test);
+        }
+        questionRepository.saveAll(questions);
     }
 }

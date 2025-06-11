@@ -1,24 +1,72 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Pending Reviews</title>
+    <style>
+        body {
+            font-family: 'Arial Rounded MT Bold', sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #2a7bc1;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .card-title {
+            font-size: 22px;
+            color: #0a508e;
+        }
+        .card-text {
+            font-size: 18px;
+        }
+        .btn {
+            background-color: #2a7bc1;
+            color: white;
+            font-size: 18px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background-color: #174f75;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+    </style>
 </head>
 <body>
-    <section>
-        <div class="container mt-4">
-            <h2>Students with Pending Reviews</h2>
-            <div class="row">
-                <div th:each="student : ${students}" class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title" th:text="${student.fullName}">Student Name</h5>
-                            <p class="card-text" th:text="${student.email}">Email</p>
-                            <a th:href="@{/autism-test/teacher/student/{id}/pending-results(id=${student.id})}" class="btn btn-primary">View Pending Results</a>
-                        </div>
+<section>
+    <div class="container">
+        <h2>Danh sách học sinh cần chấm bài</h2>
+        <div class="row">
+            <div th:each="student : ${students}" class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${student.name}">Tên học sinh</h5>
+                        <p class="card-text" th:text="${student.email}">Email</p>
+                        <a th:href="@{/autism-test/teacher/student/{id}/pending-results(id=${student.id})}" class="btn">Xem bài chưa chấm</a>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 </body>
 </html>

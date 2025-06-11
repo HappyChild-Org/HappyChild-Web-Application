@@ -1,246 +1,64 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Chi tiết kết quả đánh giá tự kỷ</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
-        .result-card {
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .result-header {
-            background-color: #4f46ba;
-            color: white;
-            padding: 20px;
-        }
-
-        .result-body {
-            padding: 20px;
-        }
-
-        .category-section {
-            margin-bottom: 25px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 20px;
-        }
-
-        .category-title {
-            font-weight: bold;
-            color: #4f46ba;
-            margin-bottom: 15px;
-            border-left: 4px solid #ff6b6b;
-            padding-left: 10px;
-        }
-
-        .question-item {
-            margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-        }
-
-        .answer-yes {
-            color: #dc3545;
-            font-weight: bold;
-        }
-
-        .answer-no {
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        .score-badge {
-            float: right;
-            background-color: #f1f2f6;
-            color: #333;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-weight: bold;
-        }
-
-        .teacher-notes {
-            background-color: #fff8e1;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .result-summary {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #e9ecef;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .total-score {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #4f46ba;
-        }
-
-        .print-btn {
-            background-color: #4f46ba;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .print-btn:hover {
-            background-color: #3a3590;
-        }
-
-        @media print {
-            .no-print {
-                display: none;
-            }
-
-            body {
-                padding: 0;
-                margin: 0;
-            }
-
-            .container {
-                width: 100%;
-                max-width: 100%;
-            }
-        }
-    </style>
+    <title>Chi tiết kết quả bài kiểm tra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
-    <!-- Navbar -->
-    <div th:replace="layout :: nav" class="no-print"></div>
-
-    <div class="container py-5">
-        <div class="d-flex justify-content-between align-items-center mb-4 no-print">
-            <h1 class="page-title">
-                <i class="fas fa-clipboard-check me-2"></i>Chi tiết kết quả đánh giá
-            </h1>
-            <div>
-                <a th:href="@{/student/autism-test-results}" class="btn btn-outline-primary me-2">
-                    <i class="fas fa-arrow-left me-1"></i>Trở lại
-                </a>
-                <button onclick="window.print()" class="print-btn">
-                    <i class="fas fa-print me-1"></i>In kết quả
-                </button>
+    <div class="container mt-4">
+        <h2>Chi tiết kết quả bài kiểm tra</h2>
+        
+        <!-- Thông tin bài kiểm tra -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${result.test.testName}">Tên bài kiểm tra</h5>
+                <p class="card-text">
+                    Điểm: <span th:text="${result.totalScore}">0</span>
+                </p>
+                <p class="card-text">
+                    Ngày hoàn thành: <span th:text="${#temporals.format(result.completedAt, 'dd/MM/yyyy HH:mm')}">Ngày</span>
+                </p>
+                <p class="card-text">
+                    Trạng thái: <span th:text="${result.status}">Trạng thái</span>
+                </p>
             </div>
         </div>
 
-        <div class="result-card">
-            <div class="result-header">
-                <div class="row">
-                    <div class="col-md-8">
-                        <h2 th:text="${result.test.testName}">Bài đánh giá tự kỷ</h2>
-                        <p th:text="${result.test.description}">Mô tả bài đánh giá</p>
-                        <p>
-                            <i class="fas fa-calendar-alt me-2"></i>
-                            <span>Ngày hoàn thành: </span>
-                            <span
-                                th:text="${#temporals.format(result.completedAt, 'dd/MM/yyyy HH:mm')}">01/01/2023</span>
-                        </p>
-                    </div>
-                    <div class="col-md-4 text-end">
-                        <div class="bg-white text-dark p-3 rounded-3 d-inline-block">
-                            <div class="fs-6">Tổng điểm:</div>
-                            <div class="fs-1 fw-bold" th:text="${result.totalScore}">15</div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Lời nhận xét của giáo viên -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Lời nhận xét của giáo viên</h4>
             </div>
-
-            <div class="result-body">
-                <div class="result-summary">
-                    <div>
-                        <h5>Trạng thái:</h5>
-                        <span class="badge bg-warning" th:if="${result.status.name() == 'PENDING_REVIEW'}">Chờ đánh
-                            giá</span>
-                        <span class="badge bg-success" th:if="${result.status.name() == 'REVIEWED'}">Đã đánh giá</span>
-                        <span class="badge bg-secondary" th:if="${result.status.name() == 'ARCHIVED'}">Đã lưu trữ</span>
-                    </div>
-                    <div class="total-score">
-                        <span>Tổng điểm: </span>
-                        <span th:text="${result.totalScore}">15</span>
-                    </div>
+            <div class="card-body">
+                <div th:if="${result.teacherNotes != null and !result.teacherNotes.isEmpty()}">
+                    <p th:text="${result.teacherNotes}"></p>
+                    <small class="text-muted">
+                        Đánh giá bởi: <span th:text="${result.reviewedBy.name}"></span>
+                        vào ngày: <span th:text="${#temporals.format(result.reviewedAt, 'dd/MM/yyyy HH:mm')}"></span>
+                    </small>
                 </div>
-
-                <div th:if="${result.status.name() == 'REVIEWED' && result.teacherNotes != null}">
-                    <h4>Nhận xét của chuyên gia:</h4>
-                    <div class="teacher-notes">
-                        <p th:text="${result.teacherNotes}">Nhận xét của chuyên gia về kết quả đánh giá.</p>
-                        <div th:if="${result.reviewedBy != null}">
-                            <small>
-                                <i class="fas fa-user-md me-1"></i>
-                                Đánh giá bởi: <span th:text="${result.reviewedBy.name}">Tên chuyên gia</span>
-                                (<span
-                                    th:text="${#temporals.format(result.reviewedAt, 'dd/MM/yyyy HH:mm')}">01/01/2023</span>)
-                            </small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Group answers by category -->
-                <div class="mt-4">
-                    <h4>Chi tiết câu trả lời theo danh mục:</h4>
-
-                    <!-- Loop through categories -->
-                    <div th:each="category : ${answers.stream().map(a -> a.getQuestion().getCategory()).distinct().toList()}"
-                        class="category-section">
-                        <h5 class="category-title" th:text="${category}">Danh mục câu hỏi</h5>
-
-                        <!-- Loop through answers in this category -->
-                        <div th:each="answer : ${answers.stream().filter(a -> a.getQuestion().getCategory().equals(category)).toList()}"
-                            class="question-item">
-                            <div class="d-flex justify-content-between">
-                                <div class="question-text" th:text="${answer.question.question}">Nội dung câu hỏi?</div>
-                                <span class="score-badge" th:text="'Điểm: ' + ${answer.score}">Điểm: 2</span>
-                            </div>
-                            <div class="mt-2">
-                                <strong>Trả lời: </strong>
-                                <span
-                                    th:class="${answer.answerValue.equalsIgnoreCase('yes') ? 'answer-yes' : 'answer-no'}"
-                                    th:text="${answer.answerValue.equalsIgnoreCase('yes') ? 'Có' : 'Không'}">
-                                    Có/Không
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                <div th:if="${result.teacherNotes == null or result.teacherNotes.isEmpty()}">
+                    <p class="text-muted">Chưa có lời nhận xét từ giáo viên</p>
                 </div>
             </div>
         </div>
 
-        <div class="mt-4 mb-5 text-center no-print">
-            <a th:href="@{/chat/{userId}(userId=${result.reviewedBy != null ? result.reviewedBy.id : 1})}"
-                class="btn btn-primary" th:if="${result.reviewedBy != null}">
-                <i class="fas fa-comments me-1"></i>Trao đổi với chuyên gia
-            </a>
-            <a th:href="@{/student/autism-tests}" class="btn btn-success">
-                <i class="fas fa-pen-to-square me-1"></i>Làm bài đánh giá khác
-            </a>
+        <!-- Câu trả lời theo danh mục -->
+        <div th:each="category : ${answersByCategory}" class="card mb-4">
+            <div class="card-header">
+                <h4 th:text="${category.key}">Tên danh mục</h4>
+            </div>
+            <div class="card-body">
+                <div th:each="answer : ${category.value}" class="mb-3">
+                    <p th:text="${answer.question.question}">Câu hỏi</p>
+                    <p>
+                        Câu trả lời: <span th:text="${answer.answerValue}">Trả lời</span>
+                    </p>
+                </div>
+            </div>
         </div>
+
+        <a th:href="@{/autism-test/results}" class="btn btn-secondary">Quay lại danh sách kết quả</a>
     </div>
-
-    <!-- Footer -->
-    <div th:replace="layout :: footer" class="no-print"></div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

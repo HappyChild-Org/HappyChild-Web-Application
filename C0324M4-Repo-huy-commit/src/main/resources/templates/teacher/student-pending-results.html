@@ -1,29 +1,29 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Student's Pending Results</title>
 </head>
 <body>
-    <section>
-        <div class="container mt-4">
-            <h2 th:text="${student.fullName + '\'s Pending Results'}">Student's Pending Results</h2>
-            <div class="row">
-                <div th:each="result : ${results}" class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title" th:text="${result.test.name}">Test Name</h5>
-                            <p class="card-text">
-                                <small class="text-muted">
-                                    Submitted on: <span th:text="${#temporals.format(result.submittedAt, 'dd/MM/yyyy HH:mm')}">Date</span>
-                                </small>
-                            </p>
-                            <a th:href="@{/autism-test/teacher/review-result/{id}(id=${result.id})}" class="btn btn-primary">Review Test</a>
-                        </div>
+<section>
+    <div class="container mt-4">
+        <h2 th:text="${student.name} + 's Pending Results'">Student's Pending Results</h2>
+        <div class="row">
+            <div th:each="result : ${results}" class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${result.test.testName}">Test Name</h5>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Submitted on: <span th:text="${#temporals.format(result.completedAt, 'dd/MM/yyyy HH:mm')}">Date</span>
+                            </small>
+                        </p>
+                        <a th:href="@{/autism-test/teacher/review-result/{id}(id=${result.id})}" class="btn btn-primary">Review Test</a>
                     </div>
                 </div>
             </div>
-            <a th:href="@{/autism-test/teacher/pending-reviews}" class="btn btn-secondary">Back to Pending Reviews</a>
         </div>
-    </section>
+        <a th:href="@{/autism-test/teacher/pending-reviews}" class="btn btn-secondary">Back to Pending Reviews</a>
+    </div>
+</section>
 </body>
-</html> 
+</html>

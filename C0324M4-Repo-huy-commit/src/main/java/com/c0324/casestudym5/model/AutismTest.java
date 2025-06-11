@@ -15,6 +15,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+
+// model chính tạo test
 @Entity
 @Table(name = "autism_tests")
 public class AutismTest {

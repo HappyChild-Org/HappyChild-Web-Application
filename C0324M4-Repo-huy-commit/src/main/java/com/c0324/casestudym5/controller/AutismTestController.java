@@ -94,28 +94,45 @@ public class AutismTestController {
     }
 
     @GetMapping("/test/{id}")
-    public String showTest(@PathVariable Long id, Model model, Principal principal) {
+    public String showTest(@PathVariable Long id, Model model, Principal principal, RedirectAttributes redirectAttributes) {
         try {
             String email = principal.getName();
             User user = userService.findByEmail(email);
+            if (user == null) {
+                redirectAttributes.addFlashAttribute("error", "User not found");
+                return "redirect:/error";
+            }
+
             Student student = studentService.findStudentByUserId(user.getId());
-            
             if (student == null) {
+                redirectAttributes.addFlashAttribute("error", "Student profile not found");
                 return "redirect:/error";
             }
             
             // Check if student has already taken this test
             List<AutismTestResult> existingResults = autismTestService.getResultsForStudentAndTest(user.getId(), id);
             if (!existingResults.isEmpty()) {
+                redirectAttributes.addFlashAttribute("message", "You have already taken this test");
                 return "redirect:/autism-test/results";
             }
             
             AutismTest test = autismTestService.getTestById(id);
             if (test == null) {
+                redirectAttributes.addFlashAttribute("error", "Test not found");
                 return "redirect:/error";
+            }
+
+            if (test.getStatus() != AutismTest.TestStatus.ACTIVE) {
+                redirectAttributes.addFlashAttribute("error", "This test is not available");
+                return "redirect:/autism-test/tests";
             }
             
             List<AutismQuestion> questions = autismTestService.getQuestionsForTest(id);
+            if (questions.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "No questions found for this test");
+                return "redirect:/autism-test/tests";
+            }
+            
             Map<String, List<AutismQuestion>> questionsByCategory = autismTestService.groupQuestionsByCategory(questions);
             
             model.addAttribute("test", test);
@@ -125,8 +142,8 @@ public class AutismTestController {
             
             return "student/take-test";
         } catch (Exception e) {
-            model.addAttribute("error", "Error loading test: " + e.getMessage());
-            return "error";
+            redirectAttributes.addFlashAttribute("error", "Error loading test: " + e.getMessage());
+            return "redirect:/error";
         }
     }
 
@@ -358,23 +375,30 @@ public class AutismTestController {
 
     @PostMapping("/teacher/create-test")
     public String createTest(@RequestParam String name,
-                           @RequestParam String description,
-                           @RequestParam Integer minAge,
-                           @RequestParam Integer maxAge,
-                           Principal principal,
-                           Model model,
-                           RedirectAttributes redirectAttributes) {
+                             @RequestParam String description,
+                             @RequestParam Integer minAge,
+                             @RequestParam Integer maxAge,
+                             Principal principal,
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
         try {
             String email = principal.getName();
+            if (email == null) {
+                throw new IllegalArgumentException("User not authenticated");
+            }
             User user = userService.findByEmail(email);
-            
+            if (user == null) {
+                throw new IllegalArgumentException("User not found");
+            }
             AutismTest test = autismTestService.createTest(name, description, minAge, maxAge, user);
             autismTestService.addPredefinedQuestionsToTest(test.getId());
-            
             redirectAttributes.addFlashAttribute("toastMessage", "Tạo bài kiểm tra thành công!");
             redirectAttributes.addFlashAttribute("toastType", "success");
-            
             return "redirect:/autism-test/teacher/manage-tests";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("test", new AutismTest());
+            return "teacher/create-test";
         } catch (Exception e) {
             model.addAttribute("error", "Error creating test: " + e.getMessage());
             return "error";
@@ -532,5 +556,28 @@ public class AutismTestController {
     private String generateStudentCode() {
         // Generate a unique student code (you can implement your own logic)
         return "STU" + System.currentTimeMillis();
+    }
+
+    // Hiển thị danh sách câu hỏi chung để chọn
+    @GetMapping("/teacher/manage-tests/{testId}/select-common-questions")
+    public String showSelectCommonQuestions(@PathVariable Long testId, Model model) {
+        List<AutismQuestion> commonQuestions = autismTestService.getCommonQuestions();
+        model.addAttribute("commonQuestions", commonQuestions);
+        model.addAttribute("testId", testId);
+        return "teacher/select-common-questions";
+    }
+
+    // Xử lý thêm các câu hỏi đã chọn vào test
+    @PostMapping("/teacher/manage-tests/{testId}/add-questions")
+    public String addQuestionsToTest(@PathVariable Long testId, @RequestParam(name = "questionIds", required = false) List<Long> questionIds, RedirectAttributes redirectAttributes) {
+        if (questionIds != null && !questionIds.isEmpty()) {
+            autismTestService.addQuestionsToTest(testId, questionIds);
+            redirectAttributes.addFlashAttribute("toastMessage", "Đã thêm câu hỏi vào bài test!");
+            redirectAttributes.addFlashAttribute("toastType", "success");
+        } else {
+            redirectAttributes.addFlashAttribute("toastMessage", "Bạn chưa chọn câu hỏi nào!");
+            redirectAttributes.addFlashAttribute("toastType", "warning");
+        }
+        return "redirect:/autism-test/teacher/manage-tests/" + testId + "/questions";
     }
 }

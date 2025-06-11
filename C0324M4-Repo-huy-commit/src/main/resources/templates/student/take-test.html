@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -152,30 +152,48 @@
 <body>
     <section>
         <div class="container mt-4">
-            <h2 th:text="${test.name}">Test Name</h2>
-            <p th:text="${test.description}">Test Description</p>
-            
-            <form th:action="@{/autism-test/test/{id}/submit(id=${test.id})}" method="post" th:object="${testForm}">
-                <div th:each="category : ${questionsByCategory}" class="card mb-4">
-                    <div class="card-header">
-                        <h4 th:text="${category.key}">Category Name</h4>
+            <div class="test-container">
+                <div class="test-header">
+                    <h2 th:text="${test.testName}">Test Name</h2>
+                    <p th:text="${test.description}">Test Description</p>
+                </div>
+
+                <div class="test-progress">
+                    <div class="progress">
+                        <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                     </div>
-                    <div class="card-body">
-                        <div th:each="question : ${category.value}" class="mb-4">
-                            <p th:text="${question.content}">Question content</p>
-                            <div class="form-check">
-                                <input type="radio" class="form-check-input" th:name="'answers[' + ${question.id} + ']'" value="YES" th:field="*{answers[__${question.id}__]}">
-                                <label class="form-check-label">Yes</label>
-                            </div>
-                            <div class="form-check">
-                                <input type="radio" class="form-check-input" th:name="'answers[' + ${question.id} + ']'" value="NO" th:field="*{answers[__${question.id}__]}">
-                                <label class="form-check-label">No</label>
+                </div>
+                
+                <form id="test-form" th:action="@{/autism-test/test/{id}/submit(id=${test.id})}" method="post" th:object="${testForm}">
+                    <div th:each="category : ${questionsByCategory}" class="card mb-4">
+                        <div class="card-header">
+                            <h4 th:text="${category.key}">Category Name</h4>
+                        </div>
+                        <div class="card-body">
+                            <div th:each="question, stat : ${category.value}" class="question-card" th:data-question-id="${question.id}">
+                                <span class="category-badge" th:text="${category.key}">Category</span>
+                                <p class="question-text">
+                                    <span class="question-number" th:text="${stat.count}">1.</span>
+                                    <span th:text="${question.question}">Question content</span>
+                                </p>
+                                <div class="options-container">
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" th:name="'answers[' + ${question.id} + ']'" value="YES" th:field="*{answers[__${question.id}__]}">
+                                        <label class="form-check-label">Yes</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" th:name="'answers[' + ${question.id} + ']'" value="NO" th:field="*{answers[__${question.id}__]}">
+                                        <label class="form-check-label">No</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit Test</button>
-            </form>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-submit-test">Submit Test</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </section>
 
@@ -186,30 +204,6 @@
             const progressBar = document.getElementById('progress-bar');
             const questions = document.querySelectorAll('.question-card');
             const totalQuestions = questions.length;
-
-            // Handle scale options
-            const scaleOptions = document.querySelectorAll('.scale-option');
-            scaleOptions.forEach(option => {
-                option.addEventListener('click', function () {
-                    const container = this.closest('.scale-options-container');
-                    const input = container.querySelector('.scale-input');
-                    const value = this.getAttribute('data-value');
-
-                    // Remove selected class from all options in this group
-                    container.querySelectorAll('.scale-option').forEach(opt => {
-                        opt.classList.remove('selected');
-                    });
-
-                    // Add selected class to clicked option
-                    this.classList.add('selected');
-
-                    // Set value to hidden input
-                    input.value = value;
-
-                    // Update progress
-                    updateProgress();
-                });
-            });
 
             // Handle radio button changes
             document.querySelectorAll('input[type="radio"]').forEach(radio => {
@@ -223,13 +217,11 @@
                 // Count answered questions
                 questions.forEach(question => {
                     const questionId = question.getAttribute('data-question-id');
-                    const inputs = question.querySelectorAll('input[type="radio"]:checked, .scale-input');
+                    const inputs = question.querySelectorAll('input[type="radio"]:checked');
 
-                    inputs.forEach(input => {
-                        if (input.value) {
-                            answeredCount++;
-                        }
-                    });
+                    if (inputs.length > 0) {
+                        answeredCount++;
+                    }
                 });
 
                 const progress = Math.round((answeredCount / totalQuestions) * 100);
@@ -251,32 +243,19 @@
                         answered = true;
                     }
 
-                    // Check scale inputs
-                    const scaleInputs = question.querySelectorAll('.scale-input');
-                    scaleInputs.forEach(input => {
-                        if (input.value) {
-                            answered = true;
-                        }
-                    });
-
                     if (!answered) {
                         isValid = false;
-                        question.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        question.style.border = '2px solid #dc3545';
-                        setTimeout(() => {
-                            question.style.border = '';
-                        }, 2000);
+                        question.style.borderColor = '#dc3545';
+                    } else {
+                        question.style.borderColor = '#4CAF50';
                     }
                 });
 
                 if (!isValid) {
                     e.preventDefault();
-                    alert('Vui lòng trả lời tất cả các câu hỏi trước khi nộp bài.');
+                    alert('Please answer all questions before submitting.');
                 }
             });
-
-            // Initial progress update
-            updateProgress();
         });
     </script>
 </body>

@@ -55,7 +55,7 @@ public class MessageService {
             return new ArrayList<>();
         }
         
-        List<Message> messages = messageRepository.findMessagesBetweenUsers(user1, user2);
+        List<Message> messages = messageRepository.findMessagesBetweenUsers(user1Id, user2Id);
         
         // Mark messages as read
         messages.stream()

@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-
+    
     <style>
         * {
             font-family: 'Nunito', sans-serif;
@@ -277,25 +277,25 @@
             .page-title {
                 font-size: 2.2rem;
             }
-
+            
             .test-card {
                 padding: 20px;
                 margin-bottom: 20px;
             }
-
+            
             .test-icon {
                 font-size: 3rem;
             }
-
+            
             .test-title {
                 font-size: 1.5rem;
             }
-
+            
             .section-header {
                 flex-direction: column;
                 text-align: center;
             }
-
+            
             .section-title {
                 font-size: 1.6rem;
                 margin-bottom: 15px;
@@ -324,140 +324,140 @@
 </head>
 
 <body>
-<!-- Navbar -->
-<div th:replace="layout :: nav"></div>
+    <!-- Navbar -->
+    <div th:replace="layout :: nav"></div>
 
-<div class="main-container">
-    <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-star me-3"></i>
-                Bài kiểm tra siêu vui!
-                <i class="fas fa-heart ms-3"></i>
-            </h1>
-            <p class="page-subtitle">Cùng khám phá những điều thú vị về bản thân nhé! 🌈</p>
-        </div>
+    <div class="main-container">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-star me-3"></i>
+                    Bài kiểm tra siêu vui!
+                    <i class="fas fa-heart ms-3"></i>
+                </h1>
+                <p class="page-subtitle">Cùng khám phá những điều thú vị về bản thân nhé! 🌈</p>
+            </div>
 
-        <!-- Info Bubble -->
-        <div class="info-bubble">
-            <i class="fas fa-lightbulb"></i>
-            <strong>Bạn biết không?</strong> Những bài kiểm tra này giúp hiểu thêm về bản thân mình đấy!
-            Hãy trả lời thật thành thật và đừng lo lắng, không có đáp án đúng hay sai nhé! 😊
-        </div>
+            <!-- Info Bubble -->
+            <div class="info-bubble">
+                <i class="fas fa-lightbulb"></i>
+                <strong>Bạn biết không?</strong> Những bài kiểm tra này giúp hiểu thêm về bản thân mình đấy! 
+                Hãy trả lời thật thành thật và đừng lo lắng, không có đáp án đúng hay sai nhé! 😊
+            </div>
 
-        <!-- Section Header -->
-        <div class="section-header">
-            <h2 class="section-title">
-                <i class="fas fa-gamepad me-2"></i>
-                Chọn bài kiểm tra yêu thích
-            </h2>
-            <a th:href="@{/student/register-child}" class="btn btn-register">
-                <i class="fas fa-user-plus me-2"></i>
-                Đăng ký thông tin
-            </a>
-        </div>
+            <!-- Section Header -->
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-gamepad me-2"></i>
+                    Chọn bài kiểm tra yêu thích
+                </h2>
+                <a th:href="@{/student/register-child}" class="btn btn-register">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Đăng ký thông tin
+                </a>
+            </div>
 
-        <!-- Test Cards -->
-        <div class="row" th:if="${not #lists.isEmpty(tests)}">
-            <div class="col-lg-6 mb-4" th:each="test : ${tests}">
-                <div class="test-card text-center">
-                    <div class="test-icon">
-                        <i class="fas fa-puzzle-piece"></i>
-                    </div>
-                    <h3 class="test-title" th:text="${test.testName}">Bài kiểm tra thú vị</h3>
-                    <p class="test-description" th:text="${test.description}">
-                        Mô tả bài kiểm tra siêu hay ho
-                    </p>
-                    <div class="age-badge">
-                        <i class="fas fa-birthday-cake me-2"></i>
-                        Cho bé từ <span th:text="${test.ageRangeMin}">3</span> - <span th:text="${test.ageRangeMax}">7</span> tuổi
-                    </div>
-                    <div>
-                        <a th:href="@{/autism-test/test/{id}(id=${test.id})}" class="btn btn-start-test">
-                            <i class="fas fa-play me-2"></i>
-                            Bắt đầu chơi!
-                        </a>
+            <!-- Test Cards -->
+            <div class="row" th:if="${not #lists.isEmpty(tests)}">
+                <div class="col-lg-6 mb-4" th:each="test : ${tests}">
+                    <div class="test-card text-center">
+                        <div class="test-icon">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                        <h3 class="test-title" th:text="${test.testName}">Bài kiểm tra thú vị</h3>
+                        <p class="test-description" th:text="${test.description}">
+                            Mô tả bài kiểm tra siêu hay ho
+                        </p>
+                        <div class="age-badge">
+                            <i class="fas fa-birthday-cake me-2"></i>
+                            Cho bé từ <span th:text="${test.ageRangeMin}">3</span> - <span th:text="${test.ageRangeMax}">7</span> tuổi
+                        </div>
+                        <div>
+                            <a th:href="@{/autism-test/test/{id}(id=${test.id})}" class="btn btn-start-test">
+                                <i class="fas fa-play me-2"></i>
+                                Bắt đầu chơi!
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Empty State -->
-        <div class="empty-state" th:if="${#lists.isEmpty(tests)}">
-            <div class="empty-icon">
-                <i class="fas fa-cat"></i>
+            <!-- Empty State -->
+            <div class="empty-state" th:if="${#lists.isEmpty(tests)}">
+                <div class="empty-icon">
+                    <i class="fas fa-cat"></i>
+                </div>
+                <h3 class="empty-title">Ôi không! Chưa có bài kiểm tra nào</h3>
+                <p class="empty-text">
+                    Hiện tại chưa có bài kiểm tra phù hợp với độ tuổi của bé. 
+                    Hãy đăng ký thông tin để mở khóa những bài kiểm tra thú vị nhé!
+                </p>
+                <a th:href="@{/student/register-child}" class="btn btn-register btn-lg">
+                    <i class="fas fa-magic me-2"></i>
+                    Đăng ký ngay thôi!
+                </a>
             </div>
-            <h3 class="empty-title">Ôi không! Chưa có bài kiểm tra nào</h3>
-            <p class="empty-text">
-                Hiện tại chưa có bài kiểm tra phù hợp với độ tuổi của bé.
-                Hãy đăng ký thông tin để mở khóa những bài kiểm tra thú vị nhé!
-            </p>
-            <a th:href="@{/student/register-child}" class="btn btn-register btn-lg">
-                <i class="fas fa-magic me-2"></i>
-                Đăng ký ngay thôi!
-            </a>
         </div>
     </div>
-</div>
 
-<!-- Footer -->
-<div th:replace="layout :: footer"></div>
+    <!-- Footer -->
+    <div th:replace="layout :: footer"></div>
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Fun interactions -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add click sound effect (optional)
-        const buttons = document.querySelectorAll('.btn');
-        buttons.forEach(button => {
-            button.addEventListener('mouseenter', function() {
-                this.style.transform = 'scale(1.05)';
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Fun interactions -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click sound effect (optional)
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
             });
 
-            button.addEventListener('mouseleave', function() {
-                this.style.transform = 'scale(1)';
+            // Add sparkle effect on test cards
+            const testCards = document.querySelectorAll('.test-card');
+            testCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    createSparkles(this);
+                });
             });
-        });
 
-        // Add sparkle effect on test cards
-        const testCards = document.querySelectorAll('.test-card');
-        testCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                createSparkles(this);
-            });
-        });
-
-        function createSparkles(element) {
-            for (let i = 0; i < 3; i++) {
-                setTimeout(() => {
-                    const sparkle = document.createElement('div');
-                    sparkle.innerHTML = '✨';
-                    sparkle.style.position = 'absolute';
-                    sparkle.style.fontSize = '1.5rem';
-                    sparkle.style.pointerEvents = 'none';
-                    sparkle.style.zIndex = '1000';
-                    sparkle.style.left = Math.random() * element.offsetWidth + 'px';
-                    sparkle.style.top = Math.random() * element.offsetHeight + 'px';
-                    sparkle.style.animation = 'sparkleFloat 1s ease-out forwards';
-
-                    element.style.position = 'relative';
-                    element.appendChild(sparkle);
-
+            function createSparkles(element) {
+                for (let i = 0; i < 3; i++) {
                     setTimeout(() => {
-                        if (sparkle.parentNode) {
-                            sparkle.parentNode.removeChild(sparkle);
-                        }
-                    }, 1000);
-                }, i * 200);
+                        const sparkle = document.createElement('div');
+                        sparkle.innerHTML = '✨';
+                        sparkle.style.position = 'absolute';
+                        sparkle.style.fontSize = '1.5rem';
+                        sparkle.style.pointerEvents = 'none';
+                        sparkle.style.zIndex = '1000';
+                        sparkle.style.left = Math.random() * element.offsetWidth + 'px';
+                        sparkle.style.top = Math.random() * element.offsetHeight + 'px';
+                        sparkle.style.animation = 'sparkleFloat 1s ease-out forwards';
+                        
+                        element.style.position = 'relative';
+                        element.appendChild(sparkle);
+                        
+                        setTimeout(() => {
+                            if (sparkle.parentNode) {
+                                sparkle.parentNode.removeChild(sparkle);
+                            }
+                        }, 1000);
+                    }, i * 200);
+                }
             }
-        }
 
-        // Add CSS for sparkle animation
-        const style = document.createElement('style');
-        style.textContent = `
+            // Add CSS for sparkle animation
+            const style = document.createElement('style');
+            style.textContent = `
                 @keyframes sparkleFloat {
                     0% {
                         transform: translateY(0) scale(0);
@@ -469,9 +469,9 @@
                     }
                 }
             `;
-        document.head.appendChild(style);
-    });
-</script>
+            document.head.appendChild(style);
+        });
+    </script>
 </body>
 
 </html>

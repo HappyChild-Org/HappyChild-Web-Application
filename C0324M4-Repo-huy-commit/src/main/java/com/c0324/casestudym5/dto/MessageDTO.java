@@ -1,12 +1,16 @@
 package com.c0324.casestudym5.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Setter
-@Getter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MessageDTO {
     private Long id;
     private Long senderId;
@@ -15,10 +19,7 @@ public class MessageDTO {
     private LocalDateTime timestamp;
     private String senderName;
     private String senderAvatar;
-    
-    public MessageDTO() {
-        this.timestamp = LocalDateTime.now();
-    }
+    private boolean read;
     
     public MessageDTO(Long senderId, Long receiverId, String content) {
         this.senderId = senderId;
@@ -26,5 +27,4 @@ public class MessageDTO {
         this.content = content;
         this.timestamp = LocalDateTime.now();
     }
-
 }

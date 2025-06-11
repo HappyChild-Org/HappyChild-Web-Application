@@ -12,16 +12,12 @@ import com.c0324.casestudym5.model.User;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    List<Message> findBySenderAndReceiver(User sender, User receiver);
-    
-    @Query("SELECT m FROM Message m WHERE (m.sender = :user1 AND m.receiver = :user2) OR (m.sender = :user2 AND m.receiver = :user1) ORDER BY m.timestamp ASC")
-    List<Message> findMessagesBetweenUsers(@Param("user1") User user1, @Param("user2") User user2);
-    
-    List<Message> findByReceiverAndReadFalse(User receiver);
-    
-    @Query("SELECT COUNT(m) FROM Message m WHERE m.receiver = :user AND m.read = false")
-    long countUnreadMessages(@Param("user") User user);
+    @Query("SELECT m FROM Message m WHERE (m.sender.id = :userId1 AND m.receiver.id = :userId2) OR (m.sender.id = :userId2 AND m.receiver.id = :userId1) ORDER BY m.timestamp")
+    List<Message> findMessagesBetweenUsers(@Param("userId1") Long userId1, @Param("userId2") Long userId2);
     
     @Query("SELECT DISTINCT m.sender FROM Message m WHERE m.receiver = :user AND m.read = false")
     List<User> findUsersWithUnreadMessages(@Param("user") User user);
+    
+    @Query("SELECT COUNT(m) FROM Message m WHERE m.receiver = :user AND m.read = false")
+    long countUnreadMessages(@Param("user") User user);
 } 

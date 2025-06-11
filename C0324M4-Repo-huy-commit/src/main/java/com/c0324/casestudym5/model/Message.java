@@ -10,10 +10,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "messages")
 public class Message {
     @Id
@@ -28,13 +34,14 @@ public class Message {
     @JoinColumn(name = "receiver_id")
     private User receiver;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 1000)
     private String content;
 
-    private LocalDateTime timestamp;
+    @Column
+    @Builder.Default
+    private LocalDateTime timestamp = LocalDateTime.now();
 
-    @Column(name = "is_read")
-    private boolean read;
-
-
+    @Column
+    @Builder.Default
+    private boolean read = false;
 }

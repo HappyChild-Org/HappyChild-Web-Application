@@ -387,6 +387,7 @@
         }
 
         function showMessage(message) {
+            console.log('DEBUG: showMessage called with message:', message);
             const messageWrapper = document.createElement('div');
             messageWrapper.className = `message-wrapper ${message.senderId === currentUserId ? 'ms-auto' : 'me-auto'}`;
             messageWrapper.dataset.messageId = message.id;
@@ -424,7 +425,12 @@
                 messageWrapper.appendChild(messageDiv);
             }
 
-            chatMessagesContainer.appendChild(messageWrapper);
+            if (chatMessagesContainer) {
+                chatMessagesContainer.appendChild(messageWrapper);
+                console.log('DEBUG: Message appended to chatMessagesContainer.');
+            } else {
+                console.error('ERROR: chatMessagesContainer is null in showMessage.');
+            }
             scrollToBottom();
         }
 
@@ -449,7 +455,11 @@
 
         function scrollToBottom() {
             if (chatMessagesContainer) {
+                console.log('DEBUG: Scrolling to bottom. Current scrollHeight:', chatMessagesContainer.scrollHeight, 'scrollTop:', chatMessagesContainer.scrollTop);
                 chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+                console.log('DEBUG: ScrollTop after scroll:', chatMessagesContainer.scrollTop);
+            } else {
+                console.error('ERROR: chatMessagesContainer is null in scrollToBottom.');
             }
         }
 

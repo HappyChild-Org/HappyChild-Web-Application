@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách Sinh Viên</title>
+    <title>Danh sách Trẻ</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -41,8 +41,8 @@
 <div id="body-fixed" class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <form th:action="@{/admin/student}" method="get" class="d-flex align-items-center" th:object="${search}">
-            <input type="text" name="name" class="form-control me-3" placeholder="Tên sinh viên" th:field="*{name}">
-            <input type="text" name="email" class="form-control me-3" placeholder="Email sinh viên" th:field="*{email}">
+            <input type="text" name="name" class="form-control me-3" placeholder="Tên Trẻ" th:field="*{name}">
+            <input type="text" name="email" class="form-control me-3" placeholder="Email Trẻ" th:field="*{email}">
             <select class="form-select me-3" name="class" th:field="*{clazzId}">
                 <option value=''>Chọn lớp</option>
                 <option th:each="c : ${classes}" th:text="${c.name}" th:value="${c.id}"></option>
@@ -55,12 +55,12 @@
             </a>
         </form>
         <a href="/admin/create-student" class="btn btn-success">
-            <i class="fas fa-plus"></i> Thêm sinh viên
+            <i class="fas fa-plus"></i> Thêm trẻ
         </a>
     </div>
 
     <div th:if="${students.isEmpty()}" class="alert alert-warning text-center">
-        Không tìm thấy học sinh nào!
+        Không tìm thấy trẻ nào!
     </div>
     <div th:if="${!students.isEmpty()}">
         <table class="table table-striped table-bordered">
@@ -77,7 +77,7 @@
             <tbody style="text-align: center">
             <tr th:if="${students.getSize() == 0}">
                 <td colspan="8" class="text-center">
-                    Không tìm thấy sinh viên này
+                    Không tìm thấy trẻ này
                 </td>
             </tr>
             <tr th:each="s, index : ${students}">
@@ -130,7 +130,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Bạn có chắc chắn muốn xóa sinh viên <strong id="studentName"></strong> không?
+                Bạn có chắc chắn muốn xóa trẻ <strong id="studentName"></strong> không?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" onclick="document.getElementById('deleteForm').submit();">

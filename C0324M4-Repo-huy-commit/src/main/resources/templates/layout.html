@@ -39,7 +39,7 @@
                         <a class="nav-link dropdown-toggle" href="#" id="studentDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #2a6b9e; font-weight: bold;">
                             TRẺ
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="studentDropdown" style="background-color: #e6f3ff; border-radius: 10px;">
+                        <ul class="dropdown-menu" aria-labelledby="studentDropdown" style="background-color: #0e2539; border-radius: 10px;">
                             <li><a class="dropdown-item" th:href="@{/student/list-teacher}">ĐĂNG KÝ GVHD</a></li>
                             <li>
                                 <a class="dropdown-item" th:href="${isInTeam ? '/student/info-team' : '/student/menu'}">
@@ -57,12 +57,12 @@
                         <a class="nav-link dropdown-toggle" href="#" id="teacherDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #2a6b9e; font-weight: bold;">
                             CHUYÊN GIA
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="teacherDropdown" style="background-color: #e6f3ff; border-radius: 10px;">
+                        <ul class="dropdown-menu" aria-labelledby="teacherDropdown" style="background-color: #0e2539; border-radius: 10px;">
                             <li><a class="dropdown-item" href="blogs">ĐĂNG THÔNG BÁO</a></li>
                             <li><a class="dropdown-item" th:href="@{/autism-test/teacher/create-test}">TẠO BÀI KIỂM TRA MỚI</a></li>
                             <li><a class="dropdown-item" href="/topics">DANH SÁCH ĐỀ TÀI</a></li>
                             <li><a class="dropdown-item" th:href="@{/teacher/topics}">KIỂM DUYỆT ĐỀ TÀI</a></li>
-                            <li><a class="dropdown-item" th:href="@{/teacher/student-list}">DANH SÁCH SINH VIÊN</a></li>
+                            <li><a class="dropdown-item" th:href="@{/teacher/student-list}">DANH SÁCH TRẺ</a></li>
                             <li><a class="dropdown-item" th:href="@{/teacher/team}">QUẢN LÝ NHÓM SINH VIÊN</a></li>
                             <li><a class="dropdown-item" th:href="@{/teacher/documents/upload}">TÀI LIỆU HƯỚNG DẪN</a></li>
                             <li><a class="dropdown-item" th:href="@{/autism-test/teacher/manage-tests}">QUẢN LÝ BÀI KIỂM TRA</a></li>
@@ -71,7 +71,7 @@
                     </li>
                     <li class="nav-item dropdown" sec:authorize="hasRole('ADMIN')">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" style="color: #2a6b9e; font-weight: bold;">QUẢN LÝ</a>
-                        <ul class="dropdown-menu" style="background-color: #e6f3ff; border-radius: 10px;">
+                        <ul class="dropdown-menu" style="background-color: #0e2539; border-radius: 10px;">
                             <li><a class="dropdown-item" th:href="@{/admin/student}">QUẢN LÝ TRẺ</a></li>
                             <li><a class="dropdown-item" th:href="@{/admin/teacher}">QUẢN LÝ CHUYÊN GIA</a></li>
                         </ul>
@@ -111,7 +111,7 @@
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <img th:src="${currentUser.avatar != null ? currentUser.avatar.url : 'https://firebasestorage.googleapis.com/v0/b/cv-pdf-upload.appspot.com/o/casestudym5%2Favatar%2Fdefault-avatar.png?alt=media&token=a7b21608-1b68-45e0-9d6e-a5fcbcaac12e'}" alt="User profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" style="background-color: #e6f3ff; border-radius: 10px;">
+                        <ul class="dropdown-menu dropdown-menu-end" style="background-color: #0e2539; border-radius: 10px;">
                             <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/user/profile}" style="font-size: 18px; font-weight: 700;">THÔNG TIN CÁ NHÂN</a></li>
                             <hr class="divider">
                             <li><a class="dropdown-item" th:href="@{/user/change-password}" style="font-size: 18px; font-weight: 700;">ĐỔI MẬT KHẨU</a></li>
@@ -130,18 +130,20 @@
     <section class="hero-section" style="background: linear-gradient(135deg, #a3d9ff, #ffcc00); padding: 50px 0; border-radius: 15px;">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-lg-6">
+                <div class="col-lg-6" style="padding-top: 80px;">
                     <div class="hero-content animate-fade-in">
                         <h4 class="mb-3" style="color: #2a6b9e;">Hỗ trợ trẻ em tự kỷ</h4>
                         <h1 class="hero-title" style="color: #2a6b9e; font-weight: bold;">Cùng HappyChild Tạo Môi Trường Giáo Dục Chuyên Nghiệp</h1>
                         <p style="color: #4a4a4a;">
                             Tại HappyChild, chúng tôi cam kết cung cấp các công cụ và hỗ trợ để giúp trẻ em tự kỷ phát triển kỹ năng, khám phá tiềm năng và đạt được thành công trong cuộc sống.
                         </p><br>
-                        <a th:href="@{/autism-test/tests}" class="hero-button btn btn-primary" style="font-size: 24px; background-color: #ffcc00; border: none; border-radius: 25px; padding: 10px 20px; color: #2a6b9e;">LÀM BÀI TEST TỰ KỶ</a>
+                        <div sec:authorize="hasRole('STUDENT')">
+                            <a th:href="@{/autism-test/tests}" class="hero-button btn btn-primary" style="font-size: 24px; background-color: #ffcc00; border: none; border-radius: 25px; padding: 10px 20px; color: #2a6b9e;">LÀM BÀI TEST TỰ KỶ</a>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-6 text-center">
-                    <img src="/img/anh-em-be.jpg" alt="Child Support" class="hero-image" style="border-radius: 15px; max-width: 100%; height: auto;">
+                <div class="col-lg-6 d-flex justify-content-center">
+                    <img src="/img/anh-em-be.jpg" alt="Child Support" class="hero-image" style="border-radius: 15px; max-width: 200%; height: auto; object-fit: contain;">
                 </div>
             </div>
         </div>
@@ -156,7 +158,7 @@
             <swiper-slide th:each="blog : ${blogs}">
                 <div class="card announcement-card" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     <div class="announcement-image-container">
-                        <img src="/img/logocg.jpg" class="announcement-image" alt="Blog Image" style="object-fit: cover; height: 200px; width: 100%; border-radius: 15px 15px 0 0;">
+                        <img src="/img/logocg.jpg" class="announcement-image" alt="Blog Image" style="object-fit: contain; height: 150px; width: 100%; border-radius: 15px 15px 0 0;">
                     </div>
                     <div class="card-body">
                         <div class="announcement-meta">
@@ -175,7 +177,7 @@
             <swiper-slide>
                 <div class="card announcement-card" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     <div class="announcement-image-container">
-                        <img src="/img/logocg.jpg" class="announcement-image" alt="" style="border-radius: 15px 15px 0 0;">
+                        <img src="/img/logocg.jpg" class="announcement-image" alt="" style="object-fit: contain; height: 150px; width: 100%; border-radius: 15px 15px 0 0;">
                     </div>
                     <div class="card-body">
                         <div class="announcement-meta">
@@ -190,7 +192,7 @@
             <swiper-slide>
                 <div class="card announcement-card" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     <div class="announcement-image-container">
-                        <img src="/img/logocg.jpg" class="announcement-image" alt="" style="border-radius: 15px 15px 0 0;">
+                        <img src="/img/logocg.jpg" class="announcement-image" alt="" style="object-fit: contain; height: 150px; width: 100%; border-radius: 15px 15px 0 0;">
                     </div>
                     <div class="card-body">
                         <div class="announcement-meta">
@@ -205,7 +207,7 @@
             <swiper-slide>
                 <div class="card announcement-card" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     <div class="announcement-image-container">
-                        <img src="/img/logocg.jpg" class="announcement-image" alt="" style="border-radius: 15px 15px 0 0;">
+                        <img src="/img/logocg.jpg" class="announcement-image" alt="" style="object-fit: contain; height: 150px; width: 100%; border-radius: 15px 15px 0 0;">
                     </div>
                     <div class="card-body">
                         <div class="announcement-meta">
@@ -220,7 +222,7 @@
             <swiper-slide>
                 <div class="card announcement-card" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     <div class="announcement-image-container">
-                        <img src="/img/logocg.jpg" class="announcement-image" alt="" style="border-radius: 15px 15px 0 0;">
+                        <img src="/img/logocg.jpg" class="announcement-image" alt="" style="object-fit: contain; height: 150px; width: 100%; border-radius: 15px 15px 0 0;">
                     </div>
                     <div class="card-body">
                         <div class="announcement-meta">
@@ -264,7 +266,7 @@
         <div class="row text-center">
             <div class="col-md-4 mb-4" th:each="topic : ${topics}">
                 <div class="card h-100 d-flex flex-column" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                    <img th:if="${topic.image}" th:src="${topic.image.url}" class="card-img" alt="Topic image" style="border-radius: 15px 15px 0 0;">
+                    <img th:if="${topic.image}" th:src="${topic.image.url}" class="card-img" alt="Topic image" style="border-radius: 15px 15px 0 0; object-fit: contain; height: 150px; width: 100%;">
                     <div class="card-body">
                         <h5 class="card-title fw-bold" th:text="${topic.name}" style="color: #2a6b9e;">Tên dự án</h5>
                         <div class="mt-auto">
@@ -373,7 +375,7 @@
                 <a class="page-link" th:href="@{/student/team(search=${search}, page=${totalPages})}" style="background-color: #e6f3ff; color: #2a6b9e;">Trang cuối</a>
             </li>
         </ul>
-        sia</div>
+    </div>
 </div>
 </body>
 

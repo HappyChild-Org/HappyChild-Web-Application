@@ -1,3 +1,4 @@
+
 package com.c0324.casestudym5.security;
 
 import org.springframework.context.annotation.Bean;
@@ -22,7 +23,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider(UserService userService){
+    public DaoAuthenticationProvider authenticationProvider(UserService userService) {
         DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
         auth.setUserDetailsService(userService);
         auth.setPasswordEncoder(passwordEncoder());
@@ -33,14 +34,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationSuccessHandler customAuthenticationSuccessHandler) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/fonts/**" , "/logout", "/webjars/**").permitAll()
-                        .requestMatchers("/blogs", "/blogs/{id}").permitAll() // Cho phép xem blog
-                        .requestMatchers("/blogs/**").hasAnyRole("ADMIN", "TEACHER") // Quyền thêm/sửa/xóa blog
-                        .requestMatchers("/autism-test/teacher/**").hasAnyRole("TEACHER", "ADMIN") // Quyền quản lý bài kiểm tra cho giáo viên
+                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/fonts/**", "/logout", "/webjars/**", "/img/**").permitAll()
+                        .requestMatchers("/blogs", "/blogs/{id}").permitAll()
+                        .requestMatchers("/blogs/**").hasAnyRole("ADMIN", "TEACHER")
+                        .requestMatchers("/autism-test/teacher/**").hasAnyRole("TEACHER", "ADMIN")
                         .requestMatchers("/user/**", "/home", "/app/**").hasAnyRole("TEACHER", "STUDENT", "ADMIN")
                         .requestMatchers("/teacher/**").hasAnyRole("TEACHER", "ADMIN")
                         .requestMatchers("/student/**").hasAnyRole("STUDENT", "ADMIN", "TEACHER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/chat/**", "/ws/**").hasAnyRole("STUDENT", "TEACHER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -58,6 +60,9 @@ public class SecurityConfig {
                 .logout(LogoutConfigurer::permitAll)
                 .exceptionHandling(exception -> exception
                         .accessDeniedPage("/access-denied")
+                )
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/ws/**")
                 );
 
         return http.build();

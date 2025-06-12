@@ -29,4 +29,8 @@ public interface StudentTeacherRepository extends JpaRepository<StudentTeacher, 
 
     @Query("SELECT st FROM StudentTeacher st WHERE st.teacher = :teacher AND st.status = 'PENDING'")
     List<StudentTeacher> findPendingRegistrationsForTeacher(@Param("teacher") Teacher teacher);
+
+    Optional<StudentTeacher> findByStudentAndTeacher(Student student, Teacher teacher);
+
+    List<StudentTeacher> findByTeacher(Teacher teacher);
 }

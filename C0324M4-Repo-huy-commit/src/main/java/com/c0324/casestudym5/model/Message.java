@@ -1,26 +1,18 @@
 package com.c0324.casestudym5.model;
 
 import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "messages")
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "messages")
+@Builder
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,14 +26,20 @@ public class Message {
     @JoinColumn(name = "receiver_id")
     private User receiver;
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column
-    @Builder.Default
-    private LocalDateTime timestamp = LocalDateTime.now();
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    @Column
-    @Builder.Default
-    private boolean read = false;
-}
+    @Column(name = "is_read", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isRead;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        if (isRead == null) {
+            isRead = false;
+        }
+    }
+} 

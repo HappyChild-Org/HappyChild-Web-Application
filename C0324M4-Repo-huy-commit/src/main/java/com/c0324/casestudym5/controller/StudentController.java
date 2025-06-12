@@ -152,13 +152,28 @@ public class StudentController {
     }
 
     @PostMapping("/invite-team")
-    public String inviteStudent(Long studentId, RedirectAttributes redirectAttributes) {
+    public String inviteStudent(@RequestParam Long studentId, RedirectAttributes redirectAttributes) {
         Student currentStudent = getCurrentStudent();
         Team currentTeam = currentStudent.getTeam();
-        if (currentTeam.getStudents().size() >= 5) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Nhóm đã đủ 5 thành viên!");
+
+        // Kiểm tra quyền nhóm trưởng
+        if (!currentStudent.isLeader()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Chỉ nhóm trưởng mới có thể mời thành viên!");
             return "redirect:/student/team";
         }
+
+        // Kiểm tra nhóm tồn tại
+        if (currentTeam == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Bạn cần tạo nhóm trước khi mời thành viên!");
+            return "redirect:/student/team";
+        }
+
+        // Kiểm tra giới hạn 3 thành viên
+        if (currentTeam.getStudents().size() >= 3) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Nhóm đã đủ 3 thành viên!");
+            return "redirect:/student/team";
+        }
+
         try {
             invitationService.inviteStudent(studentId, currentStudent, currentTeam);
             redirectAttributes.addFlashAttribute("successMessage", "Lời mời đã được gửi thành công!");
@@ -169,14 +184,14 @@ public class StudentController {
     }
 
     @PostMapping("/invitation/handle")
-    public String handleInvitation(Long invitationId, boolean accept, RedirectAttributes redirectAttributes) {
+    public String handleInvitation(@RequestParam Long invitationId, @RequestParam boolean accept, RedirectAttributes redirectAttributes) {
         String result = invitationService.handleInvitation(invitationId, accept);
 
         if ("success".equals(result)) {
             redirectAttributes.addFlashAttribute("successMessage", "Bạn đã tham gia nhóm thành công!");
             return "redirect:/student/info-team";
         } else if ("full".equals(result)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Nhóm đã đủ thành viên!");
+            redirectAttributes.addFlashAttribute("errorMessage", "Nhóm đã đủ 3 thành viên!");
             redirectAttributes.addFlashAttribute("errorType", "full");
         } else if ("declined".equals(result)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Bạn đã từ chối lời mời!");
@@ -310,6 +325,7 @@ public class StudentController {
         if (teacherPage == null || teacherPage.getContent().isEmpty()) {
             model.addAttribute("teachers", new ArrayList<>());
             model.addAttribute("teacherTeamCount", new HashMap<Long, Integer>());
+            model.addAttribute("teacherIndividualStudentCount", new HashMap<Long, Long>());
             model.addAttribute("totalPages", 0);
             model.addAttribute("pageNumber", 0);
             model.addAttribute("errorMessage", "Không tìm thấy giáo viên.");
@@ -318,20 +334,27 @@ public class StudentController {
 
         List<Teacher> teachers = teacherPage.getContent();
         Map<Long, Integer> teacherTeamCount = new HashMap<>();
+        Map<Long, Long> teacherIndividualStudentCount = new HashMap<>();
 
         for (Teacher teacher : teachers) {
             int teamCount = teamService.countTeamsByTeacherId(teacher.getId());
             teacherTeamCount.put(teacher.getId(), teamCount);
+
+            long individualStudentCount = studentTeacherRepository.countByTeacherAndStatus(teacher, StudentTeacher.Status.APPROVED);
+            teacherIndividualStudentCount.put(teacher.getId(), individualStudentCount);
         }
 
         List<Long> registeredTeacherIds = new ArrayList<>();
         Student currentStudent = getCurrentStudent();
-        if (currentStudent.getTeam() != null && currentStudent.getTeam().getTeacher() != null) {
-            registeredTeacherIds.add(currentStudent.getTeam().getTeacher().getId());
+        
+        Optional<StudentTeacher> approvedIndividualTeacher = studentTeacherRepository.findApprovedTeacherForStudent(currentStudent);
+        if (approvedIndividualTeacher.isPresent()) {
+            registeredTeacherIds.add(approvedIndividualTeacher.get().getTeacher().getId());
         }
 
         model.addAttribute("teachers", teachers);
         model.addAttribute("teacherTeamCount", teacherTeamCount);
+        model.addAttribute("teacherIndividualStudentCount", teacherIndividualStudentCount);
         model.addAttribute("totalPages", teacherPage.getTotalPages());
         model.addAttribute("pageNumber", page);
         model.addAttribute("registeredTeacherIds", registeredTeacherIds);
@@ -340,78 +363,83 @@ public class StudentController {
     }
 
     @PostMapping("/register-team-teacher")
-    public String registerTeamTeacher(@RequestParam Long teacherId,
-                                      RedirectAttributes redirectAttributes) {
+    public String registerTeamTeacher(@RequestParam Long teacherId, RedirectAttributes redirectAttributes) {
         try {
             Student currentStudent = getCurrentStudent();
 
+            // Kiểm tra nhóm tồn tại
             if (currentStudent.getTeam() == null) {
-                redirectAttributes.addFlashAttribute("errorMessage",
-                        "Bạn cần có một nhóm để đăng ký giáo viên hướng dẫn.");
+                redirectAttributes.addFlashAttribute("errorMessage", "Bạn cần có một nhóm để đăng ký giáo viên hướng dẫn!");
                 return "redirect:/student/list-teacher";
             }
 
+            // Kiểm tra quyền nhóm trưởng
             if (!currentStudent.isLeader()) {
-                redirectAttributes.addFlashAttribute("errorMessage",
-                        "Chỉ nhóm trưởng mới có thể đăng ký giáo viên hướng dẫn.");
+                redirectAttributes.addFlashAttribute("errorMessage", "Chỉ nhóm trưởng mới có thể đăng ký giáo viên hướng dẫn!");
                 return "redirect:/student/list-teacher";
             }
 
+            // Kiểm tra nhóm đã có giáo viên chưa
             if (currentStudent.getTeam().getTeacher() != null) {
-                redirectAttributes.addFlashAttribute("errorMessage",
-                        "Nhóm của bạn đã có giáo viên hướng dẫn!");
+                redirectAttributes.addFlashAttribute("errorMessage", "Nhóm của bạn đã có giáo viên hướng dẫn!");
                 return "redirect:/student/list-teacher";
             }
 
             Teacher teacher = teacherService.getTeacherById(teacherId)
                     .orElseThrow(() -> new IllegalStateException("Giáo viên không tồn tại"));
 
+            // Kiểm tra giới hạn 5 nhóm cho mỗi giáo viên
             if (teamService.countTeamsByTeacherId(teacherId) >= 5) {
-                redirectAttributes.addFlashAttribute("errorMessage",
-                        "Giáo viên đã đủ số lượng nhóm hướng dẫn!");
+                redirectAttributes.addFlashAttribute("errorMessage", "Giáo viên đã đủ số lượng nhóm hướng dẫn!");
                 return "redirect:/student/list-teacher";
             }
 
             teamService.registerTeacher(currentStudent.getTeam().getId(), teacherId);
 
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "Đăng ký giáo viên hướng dẫn thành công!");
+            // Gửi thông báo cho giáo viên
+            Notification notification = Notification.builder()
+                    .sender(currentStudent.getUser())
+                    .receiver(teacher.getUser())
+                    .content(String.format("Nhóm %s (trưởng nhóm: %s) đã đăng ký bạn làm giáo viên hướng dẫn.",
+                            currentStudent.getTeam().getName(), currentStudent.getUser().getName()))
+                    .url("/teacher/teams")
+                    .build();
+            notificationService.sendNotification(notification);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Đăng ký giáo viên hướng dẫn thành công!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage",
-                    "Lỗi khi đăng ký: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi đăng ký: " + e.getMessage());
         }
         return "redirect:/student/list-teacher";
     }
 
     @PostMapping("/register-individual-teacher")
-    public String registerIndividualTeacher(@RequestParam Long teacherId,
-                                            RedirectAttributes redirectAttributes) {
+    public String registerIndividualTeacher(@RequestParam Long teacherId, RedirectAttributes redirectAttributes) {
         try {
             Student currentStudent = getCurrentStudent();
+
+            // Ngăn nhóm trưởng đăng ký cá nhân
+            if (currentStudent.isLeader()) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Nhóm trưởng phải sử dụng đăng ký giáo viên cho nhóm!");
+                return "redirect:/student/list-teacher";
+            }
+
             Teacher teacher = teacherService.getTeacherById(teacherId)
                     .orElseThrow(() -> new IllegalStateException("Giáo viên không tồn tại"));
 
-            List<StudentTeacher> approvedRegistrations = studentTeacherRepository.findByStudentAndStatus(
-                    currentStudent, StudentTeacher.Status.APPROVED);
-            if (!approvedRegistrations.isEmpty()) {
-                redirectAttributes.addFlashAttribute("errorMessage",
-                        "Bạn đã có chuyên gia tư vấn cá nhân!");
-                return "redirect:/student/list-teacher";
-            }
-
+            // Kiểm tra đăng ký trùng
             if (studentTeacherRepository.existsByStudentAndTeacher(currentStudent, teacher)) {
-                redirectAttributes.addFlashAttribute("errorMessage",
-                        "Bạn đã đăng ký hoặc đang chờ phê duyệt với giáo viên này!");
+                redirectAttributes.addFlashAttribute("errorMessage", "Bạn đã đăng ký hoặc đang chờ phê duyệt với giáo viên này!");
                 return "redirect:/student/list-teacher";
             }
 
-            if (studentTeacherRepository.countByTeacherAndStatus(teacher,
-                    StudentTeacher.Status.APPROVED) >= 10) {
-                redirectAttributes.addFlashAttribute("errorMessage",
-                        "Giáo viên đã đủ số lượng sinh viên cá nhân!");
+            // Kiểm tra giới hạn 10 sinh viên cá nhân cho mỗi giáo viên
+            if (studentTeacherRepository.countByTeacherAndStatus(teacher, StudentTeacher.Status.APPROVED) >= 10) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Giáo viên đã đủ số lượng sinh viên cá nhân!");
                 return "redirect:/student/list-teacher";
             }
 
+            // Tạo đăng ký mới
             StudentTeacher registration = StudentTeacher.builder()
                     .student(currentStudent)
                     .teacher(teacher)
@@ -419,21 +447,23 @@ public class StudentController {
                     .build();
             studentTeacherRepository.save(registration);
 
+            // Gửi thông báo cho giáo viên
             Notification notification = Notification.builder()
                     .sender(currentStudent.getUser())
                     .receiver(teacher.getUser())
-                    .content(currentStudent.getUser().getName() + " đã đăng ký tư vấn cá nhân với bạn.")
-                    .url("/teacher/students")
+                    .content(String.format("%s đã đăng ký tư vấn cá nhân với bạn.",
+                            currentStudent.getUser().getName()))
+                    .url("/teacher/student-list")
                     .build();
             notificationService.sendNotification(notification);
 
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "Đăng ký thành công! Vui lòng chờ giáo viên phê duyệt.");
+            // Chuyển hướng đến hộp chat
+            redirectAttributes.addFlashAttribute("successMessage", "Đăng ký tư vấn cá nhân thành công! Vui lòng chờ giáo viên phê duyệt.");
+            return "redirect:/messages/chat/" + teacherId;
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage",
-                    "Lỗi khi đăng ký: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi đăng ký: " + e.getMessage());
+            return "redirect:/student/list-teacher";
         }
-        return "redirect:/student/list-teacher";
     }
 
     @GetMapping("/teacher-details/{id}")

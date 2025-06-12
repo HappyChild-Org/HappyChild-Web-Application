@@ -94,7 +94,7 @@
                         <button class="btn btn-info btn-sm" th:onclick="'loadTeacherDetails(' + ${teacher.id} + ')'">
                             <i class="fas fa-eye"></i> Xem chi tiết
                         </button>
-                        <form th:if="${!registeredTeacherIds.contains(teacher.id) && teacherTeamCount[teacher.id] < 10}"
+                        <form th:if="${!registeredTeacherIds.contains(teacher.id) && teacherIndividualStudentCount[teacher.id] < 10}"
                               th:action="@{/student/register-individual-teacher}" method="post" class="d-inline">
                             <input type="hidden" name="teacherId" th:value="${teacher.id}"/>
                             <button type="submit" class="btn btn-primary btn-sm">

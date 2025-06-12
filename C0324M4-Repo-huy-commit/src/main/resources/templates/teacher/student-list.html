@@ -1,107 +1,70 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <title>Student List</title>
+    <meta charset="UTF-8">
+    <title>Danh sách sinh viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
-    <section class="container mt-4">
-        <div class="row mb-4">
-            <div class="col-12">
-                <h2>Student List</h2>
-            </div>
-        </div>
 
-        <!-- Search Form -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <form th:action="@{/teacher/student-list}" method="get" class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="name" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="name" name="name" th:value="${search.name}">
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" th:value="${search.email}">
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="clazzId" class="form-label">Class</label>
-                                <select class="form-select" id="clazzId" name="clazzId">
-                                    <option value="">All Classes</option>
-                                    <option th:each="clazz : ${classes}"
-                                            th:value="${clazz.id}"
-                                            th:text="${clazz.name}"
-                                            th:selected="${search.clazzId != null and search.clazzId == clazz.id}">
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary">Search</button>
-                                <a th:href="@{/teacher/student-list}" class="btn btn-secondary">Clear</a>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
+<body style="font-family: 'Comic Neue', sans-serif; background-color: #f0f4f8;">
+<section class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h2 style="color: #2a6b9e;">Danh sách sinh viên đăng ký</h2>
         </div>
+    </div>
 
-        <!-- Student List -->
-        <div class="row">
-            <div class="col-12">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Class</th>
-                                <th>Phone</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:if="${students.empty}">
-                                <td colspan="5" class="text-center">No students found</td>
-                            </tr>
-                            <tr th:each="student : ${students}">
-                                <td th:text="${student.user.name}">Student Name</td>
-                                <td th:text="${student.user.email}">student@email.com</td>
-                                <td th:text="${student.clazz.name}">Class Name</td>
-                                <td th:text="${student.user.phoneNumber}">Phone Number</td>
-                                <td>
-                                    <a th:href="@{/student/{id}(id=${student.id})}" class="btn btn-info btn-sm">View</a>
-                                    <a th:href="@{/student/{id}/test-results(id=${student.id})}" class="btn btn-primary btn-sm">Test Results</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+    <!-- No Search Form as per new logic: Assuming a direct list without search filtering in this view -->
 
-        <!-- Pagination -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <nav th:if="${students.totalPages > 1}">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                            <a class="page-link" th:href="@{/teacher/student-list(page=${currentPage - 1}, name=${search.name}, email=${search.email}, clazzId=${search.clazzId})}">Previous</a>
-                        </li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0, students.totalPages - 1)}"
-                            th:classappend="${currentPage == i} ? 'active'">
-                            <a class="page-link" th:href="@{/teacher/student-list(page=${i}, name=${search.name}, email=${search.email}, clazzId=${search.clazzId})}"
-                               th:text="${i + 1}">1</a>
-                        </li>
-                        <li class="page-item" th:classappend="${currentPage == students.totalPages - 1} ? 'disabled'">
-                            <a class="page-link" th:href="@{/teacher/student-list(page=${currentPage + 1}, name=${search.name}, email=${search.email}, clazzId=${search.clazzId})}">Next</a>
-                        </li>
-                    </ul>
-                </nav>
+    <!-- Student List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table table-striped" style="border-radius: 15px; overflow: hidden; background-color: #e6f3ff;">
+                    <thead style="background-color: #a3d9ff; color: #2a6b9e;">
+                    <tr>
+                        <th>Mã sinh viên</th>
+                        <th>Tên sinh viên</th>
+                        <th>Trạng thái</th>
+                        <th>Tin nhắn chưa đọc</th>
+                        <th>Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${registrations.empty}">
+                        <td colspan="5" class="text-center" style="color: #4a4a4a;">Không tìm thấy sinh viên nào</td>
+                    </tr>
+                    <tr th:each="reg : ${registrations}">
+                        <td th:text="${reg.student.code}" style="color: #4a4a4a;"></td>
+                        <td th:text="${reg.student.user.name}" style="color: #4a4a4a;"></td>
+                        <td th:text="${reg.status}" style="color: #4a4a4a;"></td>
+                        <td style="color: #4a4a4a;">
+                            <span th:if="${unreadCounts.get(reg.student.user.id) != null and unreadCounts.get(reg.student.user.id) > 0}"
+                                  class="badge bg-danger"
+                                  th:text="${unreadCounts.get(reg.student.user.id)}"></span>
+                        </td>
+                        <td>
+                            <a th:href="@{/teacher/student/{id}(id=${reg.student.id})}" class="btn btn-info btn-sm me-2" style="background-color: #c4e1ff; border: none; border-radius: 25px; color: #2a6b9e;">Xem</a>
+                            <a th:href="@{/teacher/test-results/{id}(id=${reg.student.id})}" class="btn btn-primary btn-sm" style="background-color: #ffcc00; border: none; border-radius: 25px; color: #2a6b9e;">Kết quả kiểm tra</a>
+                            <a th:href="@{/messages/chat/{id}(id=${reg.student.user.id})}" class="btn btn-success btn-sm" style="background-color: #28a745; border: none; border-radius: 25px; color: white;">Tin nhắn</a>
+                            <th:block th:if="${reg.status.name() == 'PENDING'}">
+                                <form th:action="@{/teacher/approve-registration/{id}(id=${reg.id})}" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-primary btn-sm" style="background-color: #007bff; border: none; border-radius: 25px; color: white;">Đồng ý</button>
+                                </form>
+                            </th:block>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-    </section>
+    </div>
+
+    <!-- No Pagination for this specific view as per new logic -->
+</section>
 </body>
+
 </html>

@@ -234,7 +234,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Page<Student> findStudentsByTeacherId(Long userId, Pageable pageable, StudentSearchDTO search) {
-        Teacher teacher = teacherRepository.findTeacherByUserId(userId);
+        Teacher teacher = teacherRepository.findByUserId(userId).orElse(null);
         if (teacher == null) {
             return null;
         }

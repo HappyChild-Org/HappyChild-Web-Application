@@ -378,8 +378,9 @@
                     }
                 });
 
-                // Subscribe to chat room
-                stompClient.subscribe(`/topic/chat/${currentUserId}/${otherUserId}`, (message) => {
+                // Subscribe to chat room with consistent user ID order
+                const chatRoom = `/topic/chat/${Math.min(currentUserId, otherUserId)}/${Math.max(currentUserId, otherUserId)}`;
+                stompClient.subscribe(chatRoom, (message) => {
                     const msg = JSON.parse(message.body);
                     showMessage(msg);
                     scrollToBottom();
@@ -411,7 +412,7 @@
             const message = {
                 senderId: currentUserId,
                 receiverId: otherUserId,
-                content: messageInput.value.trim(),
+                content: messageInput.value.trim(), // Sửa lỗi cú pháp
                 timestamp: new Date().toISOString(),
                 senderName: null,
                 senderAvatar: null,
@@ -419,12 +420,8 @@
             };
 
             try {
-                // Send to personal queue
+                // Chỉ gửi tới /app/message.send
                 stompClient.send('/app/message.send', {}, JSON.stringify(message));
-
-                // Send to chat room
-                stompClient.send(`/app/chat/${currentUserId}/${otherUserId}`, {}, JSON.stringify(message));
-
                 messageInput.value = '';
                 scrollToBottom();
             } catch (error) {

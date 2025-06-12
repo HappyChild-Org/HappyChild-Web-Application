@@ -60,7 +60,7 @@ public class ChatController {
 
         if (chatPartnerUser == null) {
             model.addAttribute("errorMessage", "Người dùng đối tác không tồn tại!");
-            return "redirect:/"; 
+            return "redirect:/";
         }
 
         Student currentStudent = null;
@@ -121,6 +121,7 @@ public class ChatController {
         }
 
         List<MessageDTO> messages = messageService.getMessagesBetweenUsers(currentUser.getId(), userId);
+        System.out.println("DEBUG: Loaded " + messages.size() + " messages for user " + currentUser.getId() + " and partner " + userId);
         List<User> conversationUsers = messageService.getConversationUsers(currentUser.getId());
 
         // Tính toán số tin nhắn chưa đọc cho mỗi user
@@ -145,11 +146,14 @@ public class ChatController {
 
     @MessageMapping("/message.send")
     public void sendMessage(@Payload MessageDTO message) {
+        System.out.println("DEBUG: Received message from " + message.getSenderId() + " to " + message.getReceiverId() + ": " + message.getContent());
+
         Message savedMessage = messageService.saveMessage(
                 message.getSenderId(),
                 message.getReceiverId(),
                 message.getContent()
         );
+        System.out.println("DEBUG: Saved message with ID: " + savedMessage.getId());
 
         MessageDTO messageToSend = new MessageDTO();
         messageToSend.setId(savedMessage.getId());
@@ -161,21 +165,27 @@ public class ChatController {
         messageToSend.setSenderAvatar(savedMessage.getSender().getAvatar() != null ? savedMessage.getSender().getAvatar().getUrl() : "/img/default-avatar.png");
         messageToSend.setRead(savedMessage.getIsRead());
 
-        // Gửi tới người nhận
+        // Gửi tới người nhận qua hàng đợi cá nhân
         messagingTemplate.convertAndSendToUser(
                 message.getReceiverId().toString(),
                 "/queue/messages",
                 messageToSend
         );
+        System.out.println("DEBUG: Sent to receiver queue: /user/" + message.getReceiverId() + "/queue/messages");
 
-        // Gửi lại cho người gửi
+        // Gửi lại cho người gửi qua hàng đợi cá nhân
         messagingTemplate.convertAndSendToUser(
                 message.getSenderId().toString(),
                 "/queue/messages",
                 messageToSend
         );
-    }
+        System.out.println("DEBUG: Sent to sender queue: /user/" + message.getSenderId() + "/queue/messages");
 
+        // Gửi tới topic chung của cuộc trò chuyện
+        String chatRoom = "/topic/chat/" + Math.min(message.getSenderId(), message.getReceiverId()) + "/" + Math.max(message.getSenderId(), message.getReceiverId());
+        messagingTemplate.convertAndSend(chatRoom, messageToSend);
+        System.out.println("DEBUG: Sent to chat room: " + chatRoom);
+    }
     @MessageMapping("/chat.read")
     public void markAsRead(@Payload Long messageId) {
         messageService.markAsRead(messageId);

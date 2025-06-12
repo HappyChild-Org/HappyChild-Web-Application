@@ -182,12 +182,12 @@
             <h2 class="mb-4" th:text="${student != null} ? ${student.name} + ' - Bài Test Chưa Chấm' : 'Danh Sách Bài Test Chưa Chấm'">Danh Sách Bài Test Chưa Chấm</h2>
             <p th:if="${error}" class="text-danger" th:text="${error}" style="text-align: center;"></p>
             <div th:if="${student == null}" class="text-center">
-                <p class="text-danger">Không tìm thấy thông tin học sinh.</p>
+                <p class="text-danger">Không tìm thấy thông tin trẻ.</p>
                 <a th:href="@{/autism-test/teacher/pending-reviews}" class="btn btn-secondary">Quay Lại</a>
             </div>
             <div th:if="${student != null}">
                 <div th:if="${results == null or results.isEmpty()}" class="text-center">
-                    <p style="color: #4a4a4a;">Hiện tại không có bài test nào cần chấm cho học sinh này.</p>
+                    <p style="color: #4a4a4a;">Hiện tại không có bài test nào cần chấm cho trẻ này.</p>
                     <a th:href="@{/autism-test/teacher/pending-reviews}" class="btn btn-secondary">Quay Lại</a>
                 </div>
                 <div class="row" th:if="${results != null and !results.isEmpty()}">
@@ -213,7 +213,7 @@
     </div>
     <div sec:authorize="!hasRole('TEACHER')">
         <div class="text-center text-danger">
-            <p>Bạn không có quyền truy cập trang này. Vui lòng đăng nhập với tài khoản giáo viên.</p>
+            <p>Bạn không có quyền truy cập trang này. Vui lòng đăng nhập với tài khoản chuyên gia.</p>
             <a th:href="@{/login}" class="btn btn-primary" style="background-color: #ffcc00; border: none; border-radius: 25px; color: #2a6b9e;">Đăng Nhập</a>
         </div>
     </div>

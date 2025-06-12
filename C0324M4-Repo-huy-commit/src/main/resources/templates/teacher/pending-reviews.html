@@ -172,16 +172,16 @@
 <div class="content container">
     <div sec:authorize="hasRole('TEACHER')">
         <div class="content-container">
-            <h2 class="mb-4">Danh Sách Học Sinh Cần Chấm Bài</h2>
+            <h2 class="mb-4">Danh Sách Trẻ Cần Chấm Bài</h2>
             <p th:if="${error}" class="text-danger" th:text="${error}" style="text-align: center;"></p>
             <div th:if="${students == null or students.isEmpty()}" class="text-center">
-                <p style="color: #4a4a4a;">Hiện tại không có học sinh nào có bài test cần chấm.</p>
+                <p style="color: #4a4a4a;">Hiện tại không có trẻ nào có bài test cần chấm.</p>
             </div>
             <div class="row" th:if="${students != null and !students.isEmpty()}">
                 <div th:each="student : ${students}" class="col-md-4">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title" th:text="${student.name}">Tên Học Sinh</h5>
+                            <h5 class="card-title" th:text="${student.name}">Tên Trẻ</h5>
                             <p class="card-text" th:text="${student.email}">Email</p>
                             <a th:href="@{/autism-test/teacher/student/{id}/pending-results(id=${student.id})}" class="btn">Xem Bài Chưa Chấm</a>
                         </div>

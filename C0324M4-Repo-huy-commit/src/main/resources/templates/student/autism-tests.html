@@ -4,83 +4,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách bài kiểm tra tự kỷ</title>
+    <title>Bài kiểm tra vui nhộn</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        .test-card {
-            border-radius: 12px;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 20px;
-            border: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        * {
+            font-family: 'Nunito', sans-serif;
         }
 
-        .test-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
         }
 
-        .test-card .card-header {
-            background-color: #4f46ba;
-            color: white;
-            font-weight: bold;
-            padding: 15px 20px;
-            font-size: 1.2rem;
+        .main-container {
+            padding: 20px 0;
+            min-height: 100vh;
         }
 
-        .test-card .card-body {
-            padding: 20px;
-        }
-
-        .test-badge {
-            border-radius: 20px;
-            padding: 5px 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-right: 10px;
-        }
-
-        .btn-take-test {
-            background-color: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-take-test:hover {
-            background-color: #ff5252;
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
         }
 
         .page-title {
-            color: #4f46ba;
-            font-weight: bold;
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            animation: rainbow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .page-subtitle {
+            font-size: 1.3rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .info-bubble {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
             margin-bottom: 30px;
-            border-bottom: 3px solid #ff6b6b;
-            padding-bottom: 10px;
+            box-shadow: 0 8px 25px rgba(116, 185, 255, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .info-bubble i {
+            font-size: 1.5rem;
+            margin-right: 10px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .test-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            border: 4px solid transparent;
+        }
+
+        .test-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            z-index: -1;
+            margin: -4px;
+            border-radius: 25px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .test-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .test-card:hover::before {
+            opacity: 1;
+        }
+
+        .test-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .test-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .test-description {
+            font-size: 1.1rem;
+            color: #636e72;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .age-badge {
             display: inline-block;
+            background: linear-gradient(45deg, #fd79a8, #fdcb6e);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(253, 121, 168, 0.3);
+        }
+
+        .btn-start-test {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-start-test:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 184, 148, 0.4);
+            color: white;
+        }
+
+        .btn-start-test::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-start-test:hover::before {
+            left: 100%;
+        }
+
+        .btn-register {
+            background: linear-gradient(45deg, #e17055, #fab1a0);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(225, 112, 85, 0.3);
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(225, 112, 85, 0.4);
+            color: white;
         }
 
         .empty-state {
             text-align: center;
-            padding: 50px 20px;
-            background-color: #f8f9fa;
-            border-radius: 12px;
-            margin-top: 20px;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
 
-        .empty-state i {
+        .empty-icon {
             font-size: 5rem;
-            color: #dee2e6;
+            color: #fd79a8;
             margin-bottom: 20px;
+            animation: wiggle 2s infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        .empty-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .empty-text {
+            font-size: 1.2rem;
+            color: #636e72;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3436;
+            margin: 0;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2.2rem;
+            }
+            
+            .test-card {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .test-icon {
+                font-size: 3rem;
+            }
+            
+            .test-title {
+                font-size: 1.5rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+                margin-bottom: 15px;
+            }
+        }
+
+        /* Fun animations for page load */
+        .test-card {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 0.6s ease forwards;
+        }
+
+        .test-card:nth-child(1) { animation-delay: 0.1s; }
+        .test-card:nth-child(2) { animation-delay: 0.2s; }
+        .test-card:nth-child(3) { animation-delay: 0.3s; }
+        .test-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -89,54 +327,76 @@
     <!-- Navbar -->
     <div th:replace="layout :: nav"></div>
 
-    <div class="container py-5">
-        <h1 class="page-title"><i class="fas fa-clipboard-list me-2"></i>Bài kiểm tra đánh giá tự kỷ</h1>
-
-        <div class="row">
-            <div class="col-md-12 mb-4">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i> Các bài kiểm tra dưới đây giúp đánh giá sơ bộ về phổ tự kỷ.
-                    Kết quả chỉ mang tính chất tham khảo và cần được chuyên gia đánh giá chính thức.
-                </div>
+    <div class="main-container">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-star me-3"></i>
+                    Bài kiểm tra siêu vui!
+                    <i class="fas fa-heart ms-3"></i>
+                </h1>
+                <p class="page-subtitle">Cùng khám phá những điều thú vị về bản thân nhé! 🌈</p>
             </div>
-        </div>
 
-        <div class="row mb-4">
-            <div class="col">
-                <h2>Danh sách bài test</h2>
+            <!-- Info Bubble -->
+            <div class="info-bubble">
+                <i class="fas fa-lightbulb"></i>
+                <strong>Bạn biết không?</strong> Những bài kiểm tra này giúp hiểu thêm về bản thân mình đấy! 
+                Hãy trả lời thật thành thật và đừng lo lắng, không có đáp án đúng hay sai nhé! 😊
             </div>
-            <div class="col text-end">
-                <a th:href="@{/student/register-child}" class="btn btn-primary">
-                    <i class="fas fa-user-plus"></i> Đăng ký thông tin trẻ
+
+            <!-- Section Header -->
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-gamepad me-2"></i>
+                    Chọn bài kiểm tra yêu thích
+                </h2>
+                <a th:href="@{/student/register-child}" class="btn btn-register">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Đăng ký thông tin
                 </a>
             </div>
-        </div>
 
-        <div class="row" th:if="${not #lists.isEmpty(tests)}">
-            <div class="col-md-6 mb-4" th:each="test : ${tests}">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${test.testName}">Test Name</h5>
-                        <p class="card-text" th:text="${test.description}">Description</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                Độ tuổi: <span th:text="${test.ageRangeMin} + ' - ' + ${test.ageRangeMax} + ' tuổi'">Age Range</span>
-                            </small>
+            <!-- Test Cards -->
+            <div class="row" th:if="${not #lists.isEmpty(tests)}">
+                <div class="col-lg-6 mb-4" th:each="test : ${tests}">
+                    <div class="test-card text-center">
+                        <div class="test-icon">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                        <h3 class="test-title" th:text="${test.testName}">Bài kiểm tra thú vị</h3>
+                        <p class="test-description" th:text="${test.description}">
+                            Mô tả bài kiểm tra siêu hay ho
                         </p>
-                        <a th:href="@{/autism-test/test/{id}(id=${test.id})}" class="btn btn-primary">
-                            <i class="fas fa-play"></i> Bắt đầu làm test
-                        </a>
+                        <div class="age-badge">
+                            <i class="fas fa-birthday-cake me-2"></i>
+                            Cho bé từ <span th:text="${test.ageRangeMin}">3</span> - <span th:text="${test.ageRangeMax}">7</span> tuổi
+                        </div>
+                        <div>
+                            <a th:href="@{/autism-test/test/{id}(id=${test.id})}" class="btn btn-start-test">
+                                <i class="fas fa-play me-2"></i>
+                                Bắt đầu chơi!
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row" th:if="${#lists.isEmpty(tests)}">
-            <div class="col">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> Không có bài test nào phù hợp với độ tuổi của trẻ.
-                    <a th:href="@{/student/register-child}" class="alert-link">Đăng ký thông tin trẻ</a> để xem các bài test phù hợp.
+            <!-- Empty State -->
+            <div class="empty-state" th:if="${#lists.isEmpty(tests)}">
+                <div class="empty-icon">
+                    <i class="fas fa-cat"></i>
                 </div>
+                <h3 class="empty-title">Ôi không! Chưa có bài kiểm tra nào</h3>
+                <p class="empty-text">
+                    Hiện tại chưa có bài kiểm tra phù hợp với độ tuổi của bé. 
+                    Hãy đăng ký thông tin để mở khóa những bài kiểm tra thú vị nhé!
+                </p>
+                <a th:href="@{/student/register-child}" class="btn btn-register btn-lg">
+                    <i class="fas fa-magic me-2"></i>
+                    Đăng ký ngay thôi!
+                </a>
             </div>
         </div>
     </div>
@@ -146,6 +406,72 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Fun interactions -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click sound effect (optional)
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+
+            // Add sparkle effect on test cards
+            const testCards = document.querySelectorAll('.test-card');
+            testCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    createSparkles(this);
+                });
+            });
+
+            function createSparkles(element) {
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        const sparkle = document.createElement('div');
+                        sparkle.innerHTML = '✨';
+                        sparkle.style.position = 'absolute';
+                        sparkle.style.fontSize = '1.5rem';
+                        sparkle.style.pointerEvents = 'none';
+                        sparkle.style.zIndex = '1000';
+                        sparkle.style.left = Math.random() * element.offsetWidth + 'px';
+                        sparkle.style.top = Math.random() * element.offsetHeight + 'px';
+                        sparkle.style.animation = 'sparkleFloat 1s ease-out forwards';
+                        
+                        element.style.position = 'relative';
+                        element.appendChild(sparkle);
+                        
+                        setTimeout(() => {
+                            if (sparkle.parentNode) {
+                                sparkle.parentNode.removeChild(sparkle);
+                            }
+                        }, 1000);
+                    }, i * 200);
+                }
+            }
+
+            // Add CSS for sparkle animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes sparkleFloat {
+                    0% {
+                        transform: translateY(0) scale(0);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translateY(-50px) scale(1);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
 </body>
 
 </html>

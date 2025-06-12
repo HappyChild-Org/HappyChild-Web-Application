@@ -5,51 +5,49 @@
     <meta charset="UTF-8">
     <title>Quản lý Bài kiểm tra</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
-<body>
-    <div class="container mt-5">
-        <h1 class="mb-4">Quản lý Bài kiểm tra</h1>
-        <p th:if="${toastMessage}" th:classappend="${toastType == 'success' ? 'text-success' : 'text-danger'}"
-            th:text="${toastMessage}"></p>
+<body style="font-family: 'Comic Neue', sans-serif; background-color: #f0f4f8;">
+<div class="container mt-5">
+    <h1 class="mb-4" style="color: #2a6b9e; text-align: center;">Quản lý Bài kiểm tra</h1>
+    <p th:if="${toastMessage}" th:classappend="${toastType == 'success' ? 'text-success' : 'text-danger'}" th:text="${toastMessage}" style="text-align: center;"></p>
 
-        <a th:href="@{/autism-test/teacher/create-test}" class="btn btn-primary mb-3">Tạo Bài kiểm tra Mới</a>
-
-        <h2 class="mt-4">Danh sách Bài kiểm tra của bạn</h2>
-        <div th:if="${tests.isEmpty()}">
-            <p>Bạn chưa tạo bài kiểm tra nào.</p>
-        </div>
-        <ul class="list-group" th:if="${!tests.isEmpty()}">
-            <li class="list-group-item" th:each="test : ${tests}">
-                <p><strong>Tên Bài kiểm tra:</strong> <span th:text="${test.testName}"></span></p>
-                <p><strong>Mô tả:</strong> <span th:text="${test.description}"></span></p>
-                <p><strong>Độ tuổi:</strong> <span th:text="${test.ageRangeMin}"></span> - <span
-                        th:text="${test.ageRangeMax}"></span></p>
-                <p><strong>Trạng thái:</strong> <span th:text="${test.status}"></span></p>
-                <p><strong>Ngày tạo:</strong> <span
-                        th:text="${#temporals.format(test.createdAt, 'dd/MM/yyyy HH:mm')}"></span></p>
-                <div>
-                    <a th:href="@{/autism-test/teacher/manage-tests/{testId}/questions(testId=${test.id})}"
-                        class="btn btn-info btn-sm me-2">Quản lý Câu hỏi</a>
-                    <form th:if="${test.status.name() == 'DRAFT' || test.status.name() == 'INACTIVE'}"
-                        th:action="@{/autism-test/teacher/test/{id}/activate(id=${test.id})}" method="post"
-                        style="display: inline;">
-                        <button type="submit" class="btn btn-success btn-sm me-2">Kích hoạt</button>
-                    </form>
-                    <form th:if="${test.status.name() == 'ACTIVE'}"
-                        th:action="@{/autism-test/teacher/test/{id}/deactivate(id=${test.id})}" method="post"
-                        style="display: inline;">
-                        <button type="submit" class="btn btn-warning btn-sm me-2">Hủy kích hoạt</button>
-                    </form>
-                    <form th:action="@{/autism-test/teacher/test/{id}/delete(id=${test.id})}" method="post"
-                        style="display: inline;"
-                        onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài kiểm tra này?');">
-                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
-                    </form>
-                </div>
-            </li>
-        </ul>
+    <div class="text-center mb-3">
+        <a th:href="@{/autism-test/teacher/create-test}" class="btn btn-primary" style="background-color: #ffcc00; border: none; border-radius: 25px; color: #2a6b9e;">Tạo Bài kiểm tra Mới</a>
     </div>
+
+    <h2 class="mt-4" style="color: #2a6b9e; text-align: center;">Danh sách Bài kiểm tra của bạn</h2>
+    <div th:if="${tests.isEmpty()}" class="text-center">
+        <p style="color: #4a4a4a;">Bạn chưa tạo bài kiểm tra nào.</p>
+    </div>
+    <div class="row" th:if="${!tests.isEmpty()}">
+        <div class="col-md-6 mb-4" th:each="test : ${tests}">
+            <div class="card" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-color: #e6f3ff;">
+                <div class="card-body">
+                    <p><strong style="color: #2a6b9e;">Tên Bài kiểm tra:</strong> <span th:text="${test.testName}"></span></p>
+                    <p><strong style="color: #2a6b9e;">Mô tả:</strong> <span th:text="${test.description}"></span></p>
+                    <p><strong style="color: #2a6b9e;">Độ tuổi:</strong> <span th:text="${test.ageRangeMin}"></span> - <span th:text="${test.ageRangeMax}"></span></p>
+                    <p><strong style="color: #2a6b9e;">Trạng thái:</strong> <span th:text="${test.status}"></span></p>
+                    <p><strong style="color: #2a6b9e;">Ngày tạo:</strong> <span th:text="${#temporals.format(test.createdAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+                    <div class="d-flex justify-content-start">
+                        <a th:href="@{/autism-test/teacher/manage-tests/{testId}/questions(testId=${test.id})}" class="btn btn-info btn-sm me-2" style="background-color: #c4e1ff; border: none; border-radius: 25px; color: #2a6b9e;">Quản lý Câu hỏi</a>
+                        <form th:if="${test.status.name() == 'DRAFT' || test.status.name() == 'INACTIVE'}" th:action="@{/autism-test/teacher/test/{id}/activate(id=${test.id})}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-success btn-sm me-2" style="background-color: #b2e8b2; border: none; border-radius: 25px; color: #2a6b9e;">Kích hoạt</button>
+                        </form>
+                        <form th:if="${test.status.name() == 'ACTIVE'}" th:action="@{/autism-test/teacher/test/{id}/deactivate(id=${test.id})}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-warning btn-sm me-2" style="background-color: #ffcc00; border: none; border-radius: 25px; color: #2a6b9e;">Hủy kích hoạt</button>
+                        </form>
+                        <form th:action="@{/autism-test/teacher/test/{id}/delete(id=${test.id})}" method="post" style="display: inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài kiểm tra này?');">
+                            <button type="submit" class="btn btn-danger btn-sm" style="background-color: #ff9999; border: none; border-radius: 25px; color: #2a6b9e;">Xóa</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Kết quả kiểm tra</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css"/>
+</head>
+<body>
+    <div class="container">
+        <h2>Kết quả kiểm tra của <span th:text="${student.user.name}"></span></h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Tên bài kiểm tra</th>
+                    <th>Điểm</th>
+                    <th>Nhận xét</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="result : ${results}">
+                    <td th:text="${result.testName}"></td>
+                    <td th:text="${result.score}"></td>
+                    <td th:text="${result.comments}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <a th:href="@{/teacher/student-list}" class="btn btn-primary">Quay lại</a>
+    </div>
+</body>
+</html> 

@@ -28,6 +28,7 @@ import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/teacher")
@@ -42,10 +43,14 @@ public class TeacherController {
     private final DocumentService documentService;
     private final FirebaseService firebaseService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final StudentTeacherService studentTeacherService;
+    private final MessageService messageService;
+    private final TestResultService testResultService;
+    private final NotificationService notificationService;
 
 
     @Autowired
-    public TeacherController(TeacherService teacherService, TeamService teamService, UserService userService, TopicService topicService, StudentService studentService, ClazzService classService, DocumentService documentService, FirebaseService firebaseService, SimpMessagingTemplate messagingTemplate) {
+    public TeacherController(TeacherService teacherService, TeamService teamService, UserService userService, TopicService topicService, StudentService studentService, ClazzService classService, DocumentService documentService, FirebaseService firebaseService, SimpMessagingTemplate messagingTemplate, StudentTeacherService studentTeacherService, MessageService messageService, TestResultService testResultService, NotificationService notificationService) {
         this.teacherService = teacherService;
         this.teamService = teamService;
         this.userService = userService;
@@ -55,7 +60,17 @@ public class TeacherController {
         this.documentService = documentService;
         this.firebaseService = firebaseService;
         this.messagingTemplate = messagingTemplate;
+        this.studentTeacherService = studentTeacherService;
+        this.messageService = messageService;
+        this.testResultService = testResultService;
+        this.notificationService = notificationService;
     }
+    
+    private Teacher getCurrentTeacher() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return teacherService.getTeacherByEmail(email);
+    }
+
     @GetMapping("/detail/{id}")
     public String getTeacher(@PathVariable Long id, Model model) {
         Optional<Teacher> teacher = teacherService.getTeacherById(id);
@@ -153,35 +168,47 @@ public class TeacherController {
     }
 
     @GetMapping("/student-list")
-    public String getAllStudents(Model model,
-                                 StudentSearchDTO search,
-                                 @RequestParam(defaultValue = "0") int page, HttpSession session) {
-        boolean isSearch = true;
-        if (search.getName() != null && search.getName().isEmpty()) {
-            search.setName(null);
+    public String viewStudentList(Model model) {
+        Teacher currentTeacher = getCurrentTeacher();
+        List<StudentTeacher> registrations = studentTeacherService.findByTeacher(currentTeacher);
+
+        // Lấy tin nhắn chưa đọc
+        Map<Long, Long> unreadCounts = new HashMap<>();
+        for (StudentTeacher registration : registrations) {
+            long count = messageService.countUnreadMessages(registration.getStudent().getUser().getId());
+            unreadCounts.put(registration.getStudent().getUser().getId(), count);
         }
-        if (search.getEmail() != null && search.getEmail().isEmpty()) {
-            search.setEmail(null);
-        }
-        if (search.getClazzId() != null && search.getClazzId().toString().isEmpty()) {
-            search.setClazzId(null);
-        }
-        if (search.getName() == null && search.getEmail() == null && search.getClazzId() == null) {
-            isSearch = false;
-        }
-        User currentUser = userService.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        model.addAttribute("pageTitle", "Danh sách sinh viên");
-        Pageable pageable = PageRequest.of(page, 8);
-        Page<Student> students = studentService.findStudentsByTeacherId(currentUser.getId(),pageable, search);
-        model.addAttribute("students", students);
-        model.addAttribute("classes", classService.getAllClazzes());
-        model.addAttribute("search", search);
-        model.addAttribute("isSearch", isSearch);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", students.getTotalPages());
-        session.setAttribute("page", page);
+
+        // Giả định có TestResultService để lấy kết quả kiểm tra
+        Map<Long, List<TestResult>> testResults = registrations.stream()
+                .collect(Collectors.toMap(
+                        reg -> reg.getStudent().getId(),
+                        reg -> testResultService.findByStudentId(reg.getStudent().getId())
+                ));
+
+        model.addAttribute("registrations", registrations);
+        model.addAttribute("unreadCounts", unreadCounts);
+        model.addAttribute("testResults", testResults);
+        model.addAttribute("currentUser", currentTeacher.getUser());
         return "teacher/student-list";
     }
+    
+    @GetMapping("/student/{id}")
+    public String viewStudentDetail(@PathVariable Long id, Model model) {
+        Student student = studentService.getStudent(id);
+        model.addAttribute("student", student);
+        return "teacher/student-detail";
+    }
+
+    @GetMapping("/test-results/{id}")
+    public String viewTestResults(@PathVariable Long id, Model model) {
+        Student student = studentService.getStudent(id);
+        List<TestResult> results = testResultService.findByStudentId(id);
+        model.addAttribute("student", student);
+        model.addAttribute("results", results);
+        return "teacher/test-results";
+    }
+
     @GetMapping("/documents/upload")
     public String showDocumentsPage(@RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "5") int size,
@@ -211,14 +238,6 @@ public class TeacherController {
             return "teacher/documents";
         }
 
-//        Optional<Teacher> teacherOptional = teacherService.getTeacherById(documentDTO.getTeacher().getId());
-//        if (teacherOptional.isEmpty()) {
-//            model.addAttribute("teachers", teacherService.getAllTeachers());
-//            model.addAttribute("documentDTO", documentDTO);
-//            model.addAttribute("error", "Không tìm thấy giáo viên.");
-//            return "teacher/documents";
-//        }
-//        Teacher teacher = teacherOptional.get();
 
         User currentUser = userService.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         Teacher teacher = teacherService.getTeacherByEmail(currentUser.getEmail());
@@ -255,5 +274,33 @@ public class TeacherController {
         }
 
         return "redirect:/teacher/documents/upload";
+    }
+
+    @PostMapping("/approve-registration/{id}")
+    public String approveRegistration(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Optional<StudentTeacher> optionalStudentTeacher = studentTeacherService.findById(id);
+            if (optionalStudentTeacher.isPresent()) {
+                StudentTeacher studentTeacher = optionalStudentTeacher.get();
+                studentTeacher.setStatus(StudentTeacher.Status.APPROVED);
+                studentTeacherService.save(studentTeacher);
+
+                // Send notification to student
+                Notification notification = Notification.builder()
+                        .sender(studentTeacher.getTeacher().getUser())
+                        .receiver(studentTeacher.getStudent().getUser())
+                        .content(String.format("Giáo viên %s đã phê duyệt yêu cầu tư vấn của bạn.", studentTeacher.getTeacher().getUser().getName()))
+                        .url("/messages/chat/" + studentTeacher.getTeacher().getUser().getId())
+                        .build();
+                notificationService.sendNotification(notification);
+
+                redirectAttributes.addFlashAttribute("successMessage", "Yêu cầu đã được phê duyệt và thông báo cho học sinh.");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy yêu cầu đăng ký.");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi phê duyệt yêu cầu: " + e.getMessage());
+        }
+        return "redirect:/teacher/student-list";
     }
 }

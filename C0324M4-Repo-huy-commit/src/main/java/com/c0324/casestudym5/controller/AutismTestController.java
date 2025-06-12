@@ -457,58 +457,58 @@ public class AutismTestController {
         }
     }
 
-    // Messaging API
-    @GetMapping("/chat/{userId}")
-    public String showChatPage(@PathVariable Long userId, Model model, Principal principal) {
-        String email = principal.getName();
-        User currentUser = userService.findByEmail(email);
-        User chatPartner = userService.findById(userId);
+//    // Messaging API
+//    @GetMapping("/chat/{userId}")
+//    public String showChatPage(@PathVariable Long userId, Model model, Principal principal) {
+//        String email = principal.getName();
+//        User currentUser = userService.findByEmail(email);
+//        User chatPartner = userService.findById(userId);
+//
+//        if (chatPartner == null) {
+//            return "redirect:/";
+//        }
+//
+//        List<MessageDTO> messages = messageService.getMessagesBetweenUsers(currentUser.getId(), userId);
+//
+//        model.addAttribute("currentUser", currentUser);
+//        model.addAttribute("chatPartner", chatPartner);
+//        model.addAttribute("messages", messages);
+//
+//        return "chat/chat-page";
+//    }
 
-        if (chatPartner == null) {
-            return "redirect:/";
-        }
+//    @PostMapping("/api/send-message")
+//    @ResponseBody
+//    public ResponseEntity<?> sendMessage(@RequestBody MessageDTO message, Principal principal) {
+//        String email = principal.getName();
+//        User sender = userService.findByEmail(email);
+//
+//        if (!sender.getId().equals(message.getSenderId())) {
+//            return ResponseEntity.badRequest().body("Unauthorized sender");
+//        }
+//
+//        messageService.saveMessage(message);
+//
+//        // Send via WebSocket
+//        messageService.sendMessageViaWebSocket(message);
+//
+//        return ResponseEntity.ok().build();
+//    }
 
-        List<MessageDTO> messages = messageService.getMessagesBetweenUsers(currentUser.getId(), userId);
-
-        model.addAttribute("currentUser", currentUser);
-        model.addAttribute("chatPartner", chatPartner);
-        model.addAttribute("messages", messages);
-
-        return "chat/chat-page";
-    }
-
-    @PostMapping("/api/send-message")
-    @ResponseBody
-    public ResponseEntity<?> sendMessage(@RequestBody MessageDTO message, Principal principal) {
-        String email = principal.getName();
-        User sender = userService.findByEmail(email);
-
-        if (!sender.getId().equals(message.getSenderId())) {
-            return ResponseEntity.badRequest().body("Unauthorized sender");
-        }
-
-        messageService.saveMessage(message);
-
-        // Send via WebSocket
-        messageService.sendMessageViaWebSocket(message);
-
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/api/messages/{userId}")
-    @ResponseBody
-    public List<MessageDTO> getMessages(@PathVariable Long userId, Principal principal) {
-        String email = principal.getName();
-        User currentUser = userService.findByEmail(email);
-
-        return messageService.getMessagesBetweenUsers(currentUser.getId(), userId);
-    }
-
-    @GetMapping("/student/register-child")
-    public String showRegistrationForm(Model model) {
-        model.addAttribute("childRegistrationDTO", new ChildRegistrationDTO());
-        return "student/register-child";
-    }
+//    @GetMapping("/api/messages/{userId}")
+//    @ResponseBody
+//    public List<MessageDTO> getMessages(@PathVariable Long userId, Principal principal) {
+//        String email = principal.getName();
+//        User currentUser = userService.findByEmail(email);
+//
+//        return messageService.getMessagesBetweenUsers(currentUser.getId(), userId);
+//    }
+//
+//    @GetMapping("/student/register-child")
+//    public String showRegistrationForm(Model model) {
+//        model.addAttribute("childRegistrationDTO", new ChildRegistrationDTO());
+//        return "student/register-child";
+//    }
 
     @PostMapping("/student/register-child")
     public String registerChild(@Valid ChildRegistrationDTO registrationDTO, 

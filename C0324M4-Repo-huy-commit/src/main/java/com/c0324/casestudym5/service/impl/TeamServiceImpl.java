@@ -9,14 +9,12 @@ import com.c0324.casestudym5.util.CommonMapper;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
 @Service
 public class TeamServiceImpl implements TeamService {
@@ -35,7 +33,6 @@ public class TeamServiceImpl implements TeamService {
         this.mailService = mailService;
     }
 
-
     @Override
     public List<Team> findAll() {
         return teamRepository.findAll();
@@ -47,8 +44,8 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Team findById(Long teamId) {
-        return teamRepository.findById(teamId).orElse(null);
+    public Team findById(Long id) {
+        return teamRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -61,58 +58,48 @@ public class TeamServiceImpl implements TeamService {
         Pageable pageable = PageRequest.of(page, 5);
         Teacher teacher = teacherRepository.findTeacherByUserEmail(user.getEmail());
         Page<Team> teams;
-        if(keyword.isEmpty()){
+        if (keyword.isEmpty()) {
             teams = teamRepository.findTeamsByTeacherId(teacher.getId(), pageable);
         } else {
-            teams = teamRepository.searchTeamByNameAndTeacherId(teacher.getId(), keyword ,pageable);
+            teams = teamRepository.searchTeamByNameAndTeacherId(teacher.getId(), keyword, pageable);
         }
         List<Team> filteredTeams = teams.stream()
                 .filter(team -> !team.getStudents().isEmpty())
                 .toList();
-        return new PageImpl<>(filteredTeams, pageable, filteredTeams.size())
-                .map(CommonMapper::mapToTeamDTO);
+        List<TeamDTO> teamDTOs = filteredTeams.stream()
+            .map(CommonMapper::mapToTeamDTO)
+            .toList();
+        return new PageImpl<>(teamDTOs, pageable, filteredTeams.size());
     }
 
     @Override
     @Transactional
     public void deleteTeam(Long teamId, User sender) {
         Team team = teamRepository.findById(teamId).orElse(null);
-        if (team != null) {
-            // Update related topics
+        if (team != null && sender != null) {
             Topic topic = team.getTopic();
             if (topic != null) {
                 topic.setTeam(null);
             }
 
-            //Send notification and email to students in team
             List<Student> students = team.getStudents();
             String subject = "Thông báo xóa nhóm - " + team.getName();
             for (Student student : students) {
-                // Remove team from student
                 student.setTeam(null);
                 student.setLeader(false);
-
-                // Send email to student
                 mailService.sendDeleteTeamEmail(student.getUser().getEmail(), subject, sender.getName(), student.getUser().getName(), team.getName());
-
-                // Send notification to student
                 Notification notification = Notification.builder()
-                        .content(" đã xóa nhóm " + team.getName() + " mà bạn đang tham gia")
+                        .content(sender.getName() + " đã xóa nhóm " + team.getName())
                         .sender(sender)
                         .receiver(student.getUser())
                         .url(null)
                         .build();
                 notificationService.sendNotification(notification);
             }
-
-            // Batch update students
             studentService.saveAll(students);
-
-            // Delete team
             teamRepository.delete(team);
         }
     }
-
 
     @Override
     public void createNewTeam(TeamDTO teamDTO, Student currentStudent) {
@@ -125,36 +112,35 @@ public class TeamServiceImpl implements TeamService {
         studentService.save(currentStudent);
     }
 
-
     @Override
     public void registerTeacher(Long teamId, Long teacherId) {
-        Team team = teamRepository.findById(teamId).orElse(null);
-        if (team != null) {
-            if (team.getTopic() != null && teacherId == 0) {
-                throw new IllegalStateException("Đã đăng ký đề tài, không được hủy giáo viên.");
+        Team team = teamRepository.findById(teamId)
+            .orElseThrow(() -> new IllegalStateException("Nhóm không tồn tại"));
+        if (team.getTeacher() != null) {
+            throw new IllegalStateException("Nhóm đã có giáo viên hướng dẫn!");
+        }
+        if (team.getTopic() != null && teacherId == 0) {
+            throw new IllegalStateException("Đã đăng ký đề tài, không được hủy giáo viên!");
+        }
+        if (team.getTopic() != null) {
+            throw new IllegalStateException("Nhóm đã đăng ký đề tài, không thể đổi giáo viên!");
+        }
+        if (teacherId == 0) {
+            team.setTeacher(null);
+            teamRepository.save(team);
+        } else {
+            Teacher teacher = teacherRepository.findById(teacherId)
+                .orElseThrow(() -> new IllegalStateException("Giáo viên không tồn tại"));
+            if (countTeamsByTeacherId(teacherId) >= 5) {
+                throw new IllegalStateException("Giáo viên đã đủ số lượng nhóm!");
             }
-            if (team.getTopic() != null) {
-                throw new IllegalStateException("Nhóm đã đăng ký đề tài, không thể đăng ký giáo viên mới.");
-            }
-            if (teacherId == 0) {
-                team.setTeacher(null);
-                teamRepository.save(team);
-            } else {
-                Teacher teacher = teacherRepository.findById(teacherId).orElse(null);
-                if (teacher != null) {
-                    team.setTeacher(teacher);
-                    teamRepository.save(team);
-                }
-            }
+            team.setTeacher(teacher);
+            teamRepository.save(team);
         }
     }
-
-
-
 
     @Override
     public int countTeamsByTeacherId(Long teacherId) {
         return teamRepository.countByTeacherId(teacherId);
     }
-
 }

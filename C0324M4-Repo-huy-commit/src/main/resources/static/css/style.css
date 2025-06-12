@@ -53,6 +53,15 @@ body {
     background-color: #e6b800;
 }
 
+.hero-image {
+    max-width: 80%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 15px;
+    display: block;
+    margin: 0 auto;
+}
+
 .main-title {
     color: #2a6b9e;
     text-align: center;
@@ -77,6 +86,13 @@ body {
 .announcement-title {
     color: #2a6b9e;
     font-weight: bold;
+}
+
+.announcement-image {
+    object-fit: contain;
+    height: 150px;
+    width: 100%;
+    border-radius: 15px 15px 0 0;
 }
 
 .view-details {
@@ -187,5 +203,9 @@ body {
 
     .card {
         margin-bottom: 20px;
+    }
+
+    .hero-image {
+        max-width: 100%;
     }
 }

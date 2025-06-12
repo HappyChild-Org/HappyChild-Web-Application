@@ -1,49 +1,288 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Review Test Result</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đánh Giá Kết Quả Bài Test</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Comic Neue', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .content {
+            flex: 1 0 auto;
+        }
+        .footer {
+            flex-shrink: 0;
+        }
+        .content-container {
+            background-color: #e6f3ff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .card {
+            border-radius: 10px;
+            background-color: #ffffff;
+            border: 1px solid #c4e1ff;
+        }
+        .card-header {
+            background-color: #c4e1ff;
+            color: #2a6b9e;
+            border-radius: 10px 10px 0 0;
+        }
+        .card-title {
+            color: #2a6b9e;
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #c4e1ff;
+        }
+        .form-control:focus {
+            border-color: #2a6b9e;
+            box-shadow: 0 0 0 0.25rem rgba(42, 107, 158, 0.25);
+        }
+        .btn-primary {
+            background-color: #ffcc00;
+            color: #2a6b9e;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 30px;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #e6b800;
+        }
+        .btn-secondary {
+            background-color: #c4e1ff;
+            color: #2a6b9e;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 30px;
+            font-weight: bold;
+        }
+        .btn-secondary:hover {
+            background-color: #a3d9ff;
+        }
+        .category-title {
+            color: #2a6b9e;
+        }
+        .question-text {
+            color: #4a4a4a;
+        }
+        .answer-text {
+            color: #2a6b9e;
+            font-weight: bold;
+        }
+        @media (max-width: 576px) {
+            .content-container {
+                padding: 15px;
+                margin: 15px;
+            }
+            .btn-primary, .btn-secondary {
+                padding: 8px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
-<section>
-    <div class="container mt-4">
-        <h2>Review Test Result</h2>
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title" th:text="${result.test.testName}">Test Name</h5>
-                <p class="card-text">
-                    <small class="text-muted">
-                        Submitted on: <span th:text="${#temporals.format(result.completedAt, 'dd/MM/yyyy HH:mm')}">Date</span>
-                    </small>
-                </p>
-                <p class="card-text">
-                    Student: <span th:text="${result.student.name}">Student Name</span>
-                </p>
-            </div>
-        </div>
-
-        <div th:each="category : ${answersByCategory}" class="card mb-4">
-            <div class="card-header">
-                <h4 th:text="${category.key}">Category Name</h4>
-            </div>
-            <div class="card-body">
-                <div th:each="answer : ${category.value}" class="mb-3">
-                    <p th:text="${answer.question.question}">Question content</p>
-                    <p>
-                        Student's Answer: <span th:text="${answer.answerValue}">Answer</span>
-                    </p>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg" style="background-color: #a3d9ff; border-radius: 0 0 15px 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <img src="https://happychild.vercel.app/assets/new-logo.08e032e4.jpg" alt="HappyChild Logo" style="height: 70px; border-radius: 10px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="/" style="color: #2a6b9e; font-weight: bold;">TRANG CHỦ</a></li>
+                <li class="nav-item"><a class="nav-link" href="/" style="color: #2a6b9e; font-weight: bold;">TIN TỨC</a></li>
+                <li class="nav-item"><a class="nav-link" href="/" style="color: #2a6b9e; font-weight: bold;">LIÊN HỆ</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown notif-icon" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-bell" style="font-size: 15px; color: #2a6b9e;"></i>
+                        <span id="notif-count" class="badge-notify" th:classappend="${newNotificationsCount > 0 ? ' show' : ''}" th:text="${newNotificationsCount > 3 ? '3+' : newNotificationsCount}" style="background-color: #ffcc00; color: #2a6b9e; border-radius: 50%; padding: 4px 8px;"></span>
+                    </a>
+                    <div class="dropdown-menu notif-dd" aria-labelledby="navbarDropdown" style="background-color: #c4e1ff; border-radius: 10px;">
+                        <div style="color: #da174a; padding: 10px 0; text-align: center" th:if="${notifications == null || notifications.isEmpty()}">
+                            Không có thông báo nào!
+                        </div>
+                        <div th:each="notif : ${notifications}" class="notif-list" style="padding: 10px;">
+                            <a th:href="${notif.url}" class="notif-link" style="text-decoration: none; color: inherit;">
+                                <div class="notif-img">
+                                    <img th:src="${notif.senderAvatar}" alt="user" style="border-radius: 50%; width: 40px; height: 40px;">
+                                </div>
+                                <div class="notif-detail" style="margin-left: 10px;">
+                                    <p>
+                                        <b th:text="${notif.senderName}"></b>
+                                        <span th:text="${notif.content}"></span>
+                                    </p>
+                                    <p>
+                                        <small th:text="${notif.timeDifference}"></small>
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div>
+                <div class="dropdown user-profile d-flex justify-content-between align-items-center">
+                    <strong th:if="${username}" th:text="${username}" style="color: #2a6b9e;" class="me-3"></strong>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <img th:src="${currentUser.avatar != null ? currentUser.avatar.url : 'https://firebasestorage.googleapis.com/v0/b/cv-pdf-upload.appspot.com/o/casestudym5%2Favatar%2Fdefault-avatar.png?alt=media&token=a7b21608-1b68-45e0-9d6e-a5fcbcaac12e'}" alt="User profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" style="background-color: #c4e1ff; border-radius: 10px;">
+                        <li><a class="dropdown-item" th:href="@{/user/profile}" style="font-size: 18px; font-weight: 700; color: #2a6b9e;">THÔNG TIN CÁ NHÂN</a></li>
+                        <hr class="divider">
+                        <li><a class="dropdown-item" th:href="@{/user/change-password}" style="font-size: 18px; font-weight: 700; color: #2a6b9e;">ĐỔI MẬT KHẨU</a></li>
+                        <hr class="divider">
+                        <li><a class="dropdown-item" th:href="@{/logout}" style="font-size: 18px; font-weight: 700; color: #2a6b9e;">ĐĂNG XUẤT</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
-
-        <form th:action="@{/autism-test/teacher/review-result/{id}(id=${result.id})}" method="post">
-            <div class="form-group mb-3">
-                <label for="notes">Review Notes</label>
-                <textarea class="form-control" id="notes" name="notes" rows="4" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit Review</button>
-            <a th:href="@{/autism-test/teacher/pending-reviews}" class="btn btn-secondary">Back to Pending Reviews</a>
-        </form>
     </div>
-</section>
+</nav>
+
+<!-- Nội dung chính -->
+<div class="content container">
+    <div sec:authorize="hasRole('TEACHER')">
+        <div class="content-container">
+            <h2 class="mb-4" style="color: #2a6b9e;">Đánh Giá Kết Quả Bài Test</h2>
+            <p th:if="${error}" class="text-danger" th:text="${error}" style="text-align: center;"></p>
+            <div th:if="${result}">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${result.test.testName}">Tên Bài Test</h5>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Ngày nộp: <span th:text="${#temporals.format(result.completedAt, 'dd/MM/yyyy HH:mm')}">Ngày</span>
+                            </small>
+                        </p>
+                        <p class="card-text">
+                            Học sinh: <span th:text="${result.student.name}">Tên Học Sinh</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div th:if="${answersByCategory == null or answersByCategory.isEmpty()}" class="text-center">
+                    <p style="color: #4a4a4a;">Không có câu trả lời nào để hiển thị.</p>
+                </div>
+                <div th:each="category : ${answersByCategory}" class="card mb-4" th:if="${answersByCategory != null and !answersByCategory.isEmpty()}">
+                    <div class="card-header">
+                        <h4 class="category-title" th:text="${category.key}">Tên Danh Mục</h4>
+                    </div>
+                    <div class="card-body">
+                        <div th:each="answer : ${category.value}" class="mb-3">
+                            <p class="question-text" th:text="${answer.question.question}">Nội dung câu hỏi</p>
+                            <p>
+                                Câu trả lời: <span class="answer-text" th:text="${answer.answerValue}">Câu trả lời</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <form th:action="@{/autism-test/teacher/review-result/{id}(id=${result.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="notes" name="notes" rows="4" placeholder="Nhập nhận xét của bạn" required></textarea>
+                        <label for="notes">Nhận Xét Đánh Giá</label>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Gửi Đánh Giá</button>
+                        <a th:href="@{/autism-test/teacher/pending-reviews}" class="btn btn-secondary ms-2">Quay Lại</a>
+                    </div>
+                </form>
+            </div>
+            <div th:unless="${result}" class="text-center">
+                <p class="text-danger">Không tìm thấy kết quả bài test.</p>
+                <a th:href="@{/autism-test/teacher/pending-reviews}" class="btn btn-secondary">Quay Lại</a>
+            </div>
+        </div>
+    </div>
+    <div sec:authorize="!hasRole('TEACHER')">
+        <div class="text-center text-danger">
+            <p>Bạn không có quyền truy cập trang này. Vui lòng đăng nhập với tài khoản giáo viên.</p>
+            <a th:href="@{/login}" class="btn btn-primary" style="background-color: #ffcc00; border: none; border-radius: 25px; color: #2a6b9e;">Đăng nhập</a>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer py-4" style="background-color: #a3d9ff; border-radius: 15px 15px 0 0;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                <div class="logo"><span></span></div>
+                <p class="mb-4" style="color: #4a4a4a;">Hệ thống hỗ trợ trẻ em tự kỷ - HappyChild</p>
+                <div class="contact-info">
+                    <div>
+                        <i class="fas fa-map-marker-alt contact-icon" style="color: #ffcc00;"></i>
+                        <a class="text-decoration-none" href="https://www.google.com/maps/place/54+Nguy%E1%BB%85n+L%C6%B0%C6%A1ng+B%E1%BA%B1ng,+Ho%C3%A0+Kh%C3%A1nh+B%E1%BA%AFc,+Li%C3%AAn+Chi%E1%BB%83u,+%C4%90%C3%A0+N%E1%BA%B5ng+550000,+Vi%E1%BB%87t+Nam/@16.073867,108.147314,17z/data" target="_blank" rel="noopener noreferrer" style="color: #4a4a4a;">
+                            54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.
+                        </a>
+                    </div>
+                    <div>
+                        <i class="fas fa-envelope contact-icon" style="color: #ffcc00;"></i>
+                        <span style="color: #4a4a4a;">marketing@dut.vn</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-phone contact-icon" style="color: #ffcc00;"></i>
+                        <span style="color: #4a4a4a;">123456789</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                <h3 class="footer-heading" style="color: #2a6b9e;">Các hoạt động & Tài nguyên</h3>
+                <div class="products">
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Cựu học viên</a></div>
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Hoạt động cộng đồng</a></div>
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Tài liệu tải về</a></div>
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Blog chia sẻ kiến thức</a></div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <h3 class="footer-heading" style="color: #2a6b9e;">Đăng ký nhận thông tin</h3>
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" placeholder="Nhập email của bạn" style="border-radius: 25px 0 0 25px;">
+                    <button class="btn subscribe-btn text-white" type="button" style="background-color: #ffcc00; color: #2a6b9e; border-radius: 0 25px 25px 0;">Xác nhận</button>
+                </div>
+                <hr class="divider">
+                <h3 class="footer-heading" style="color: #2a6b9e;">Liên kết mạng xã hội</h3>
+                <div class="social-icons">
+                    <i class="fab fa-facebook" style="color: #ffcc00; font-size: 24px; margin-right: 10px;"></i>
+                    <i class="fab fa-linkedin" style="color: #ffcc00; font-size: 24px; margin-right: 10px;"></i>
+                    <i class="fab fa-youtube" style="color: #ffcc00; font-size: 24px; margin-right: 10px;"></i>
+                    <i class="fab fa-tiktok" style="color: #ffcc00; font-size: 24px;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
 </body>
 </html>

@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý giáo viên - Thêm giáo viên</title>
+    <title>Quản lý Chuyên Gia - Thêm Chuyên Gia</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}"/>
@@ -17,12 +17,12 @@
     <form role="form" th:action="@{/admin/teacher/create}" th:object="${teacherDTO}" method="post" enctype="multipart/form-data">
         <div class="form-grid">
             <div class="title_header">
-                <h2>Chi Tiết Giáo Viên</h2>
+                <h2>Chi Tiết Chuyên Gia</h2>
             </div>
 
             <div class="form-fields">
                 <div class="form-group">
-                    <label class="required" for="name">Tên giáo viên</label>
+                    <label class="required" for="name">Tên Chuyên Gia</label>
                     <input class="form-control" id="name" type="text" th:field="*{name}">
                     <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
                 </div>

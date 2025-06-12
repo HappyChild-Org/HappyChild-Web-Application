@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +9,26 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
         body {
-            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Comic Neue', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .content {
+            flex: 1 0 auto;
+        }
+        .footer {
+            flex-shrink: 0;
         }
         .auth-container {
             max-width: 900px;
@@ -18,14 +36,14 @@
             padding: 20px;
         }
         .auth-card {
-            background: white;
+            background: #e6f3ff;
             border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             overflow: hidden;
         }
         .auth-header {
-            background: #007bff;
-            color: white;
+            background: #a3d9ff;
+            color: #2a6b9e;
             padding: 20px;
             text-align: center;
         }
@@ -35,37 +53,71 @@
         .nav-tabs {
             border: none;
             margin-bottom: 20px;
+            justify-content: center;
         }
         .nav-tabs .nav-link {
             border: none;
-            color: #6c757d;
+            color: #4a4a4a;
             padding: 10px 20px;
-            border-radius: 5px;
-            margin-right: 10px;
+            border-radius: 25px;
+            margin: 0 5px;
+            font-weight: bold;
         }
         .nav-tabs .nav-link.active {
-            background: #007bff;
-            color: white;
+            background: #ffcc00;
+            color: #2a6b9e;
         }
         .form-control {
-            border-radius: 5px;
-            padding: 10px 15px;
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 1px solid #c4e1ff;
         }
         .btn-primary {
-            padding: 10px 30px;
-            border-radius: 5px;
+            background-color: #ffcc00;
+            border: none;
+            border-radius: 25px;
+            color: #2a6b9e;
+            padding: 12px 30px;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #e6b800;
         }
         .alert {
-            border-radius: 5px;
+            border-radius: 10px;
             margin-bottom: 20px;
+        }
+        @media (max-width: 576px) {
+            .auth-container {
+                margin: 20px auto;
+                padding: 10px;
+            }
+            .auth-body {
+                padding: 15px;
+            }
+            .form-control {
+                padding: 10px;
+            }
+            .btn-primary {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            .nav-tabs .nav-link {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
+
 <body>
+<!-- Nội dung chính -->
+<div class="content">
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <h2>HappyChild</h2>
+                <img src="https://happychild.vercel.app/assets/new-logo.08e032e4.jpg" alt="HappyChild Logo" style="height: 80px; border-radius: 10px; margin-bottom: 10px;">
+                <h2 style="margin: 0;">HappyChild</h2>
                 <p>Hệ thống hỗ trợ trẻ em tự kỷ</p>
             </div>
             <div class="auth-body">
@@ -97,11 +149,11 @@
                     <div class="tab-pane fade show active" id="login" role="tabpanel">
                         <form th:action="@{/authenticateUser}" method="post">
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
+                                <label for="email" class="form-label" style="color: #2a6b9e;">Email</label>
                                 <input type="email" class="form-control" id="email" name="email" th:value="${email}" required>
                             </div>
                             <div class="mb-3">
-                                <label for="password" class="form-label">Mật khẩu</label>
+                                <label for="password" class="form-label" style="color: #2a6b9e;">Mật khẩu</label>
                                 <input type="password" class="form-control" id="password" name="password" required>
                             </div>
                             <div class="d-grid">
@@ -116,27 +168,27 @@
                     <div class="tab-pane fade" id="register" role="tabpanel">
                         <form th:action="@{/autism-test/student/register-child}" method="post" th:object="${registrationDTO}">
                             <div class="mb-3">
-                                <label for="name" class="form-label">Họ và tên</label>
+                                <label for="name" class="form-label" style="color: #2a6b9e;">Họ và tên</label>
                                 <input type="text" class="form-control" id="name" th:field="*{name}" required>
                                 <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="registerEmail" class="form-label">Email</label>
+                                <label for="registerEmail" class="form-label" style="color: #2a6b9e;">Email</label>
                                 <input type="email" class="form-control" id="registerEmail" th:field="*{email}" required>
                                 <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="registerPassword" class="form-label">Mật khẩu</label>
+                                <label for="registerPassword" class="form-label" style="color: #2a6b9e;">Mật khẩu</label>
                                 <input type="password" class="form-control" id="registerPassword" th:field="*{password}" required>
                                 <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="dob" class="form-label">Ngày sinh</label>
+                                <label for="dob" class="form-label" style="color: #2a6b9e;">Ngày sinh</label>
                                 <input type="date" class="form-control" id="dob" th:field="*{dob}" required>
                                 <div class="text-danger" th:if="${#fields.hasErrors('dob')}" th:errors="*{dob}"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="gender" class="form-label">Giới tính</label>
+                                <label for="gender" class="form-label" style="color: #2a6b9e;">Giới tính</label>
                                 <select class="form-control" id="gender" th:field="*{gender}" required>
                                     <option value="">Chọn giới tính</option>
                                     <option value="MALE">Nam</option>
@@ -146,17 +198,17 @@
                                 <div class="text-danger" th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="phoneNumber" class="form-label">Số điện thoại</label>
+                                <label for="phoneNumber" class="form-label" style="color: #2a6b9e;">Số điện thoại</label>
                                 <input type="tel" class="form-control" id="phoneNumber" th:field="*{phoneNumber}" required>
                                 <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="address" class="form-label">Địa chỉ</label>
+                                <label for="address" class="form-label" style="color: #2a6b9e;">Địa chỉ</label>
                                 <input type="text" class="form-control" id="address" th:field="*{address}" required>
                                 <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="parentName" class="form-label">Tên phụ huynh</label>
+                                <label for="parentName" class="form-label" style="color: #2a6b9e;">Tên phụ huynh</label>
                                 <input type="text" class="form-control" id="parentName" th:field="*{parentName}" required>
                                 <div class="text-danger" th:if="${#fields.hasErrors('parentName')}" th:errors="*{parentName}"></div>
                             </div>
@@ -171,8 +223,62 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Footer -->
+<footer class="footer py-4" style="background-color: #a3d9ff; border-radius: 15px 15px 0 0;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                <div class="logo"><span></span></div>
+                <p class="mb-4" style="color: #4a4a4a;">Hệ thống hỗ trợ trẻ em tự kỷ - HappyChild</p>
+                <div class="contact-info">
+                    <div>
+                        <i class="fas fa-map-marker-alt contact-icon" style="color: #ffcc00;"></i>
+                        <a class="text-decoration-none" href="https://www.google.com/maps/place/54+Nguy%E1%BB%85n+L%C6%B0%C6%A1ng+B%E1%BA%B1ng,+Ho%C3%A0+Kh%C3%A1nh+B%E1%BA%AFc,+Li%C3%AAn+Chi%E1%BB%83u,+%C4%90%C3%A0+N%E1%BA%B5ng+550000,+Vi%E1%BB%87t+Nam/@16.073867,108.147314,17z/data=!3m1!4b1!4m6!3m5!1s0x314218d68e8ccb03:0x64dc2cb3e38bbdaf!8m2!3d16.0738619!4d108.1498889!16s%2Fg%2F11csnvrh83?entry=ttu&g_ep=EgoyMDI1MDMwMi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" style="color: #4a4a4a;">
+                            54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.
+                        </a>
+                    </div>
+                    <div>
+                        <i class="fas fa-envelope contact-icon" style="color: #ffcc00;"></i>
+                        <span style="color: #4a4a4a;">marketing@dut.vn</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-phone contact-icon" style="color: #ffcc00;"></i>
+                        <span style="color: #4a4a4a;">123456789</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                <h3 class="footer-heading" style="color: #2a6b9e;">Các hoạt động & Tài nguyên</h3>
+                <div class="products">
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Cựu học viên</a></div>
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Hoạt động cộng đồng</a></div>
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Tài liệu tải về</a></div>
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Blog chia sẻ kiến thức</a></div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <h3 class="footer-heading" style="color: #2a6b9e;">Đăng ký nhận thông tin</h3>
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" placeholder="Nhập email của bạn" style="border-radius: 25px 0 0 25px;">
+                    <button class="btn subscribe-btn text-white" type="button" style="background-color: #ffcc00; color: #2a6b9e; border-radius: 0 25px 25px 0;">Xác nhận</button>
+                </div>
+                <hr class="divider">
+                <h3 class="footer-heading" style="color: #2a6b9e;">Liên kết mạng xã hội</h3>
+                <div class="social-icons">
+                    <i class="fab fa-facebook" style="color: #ffcc00; font-size: 24px; margin-right: 10px;"></i>
+                    <i class="fab fa-linkedin" style="color: #ffcc00; font-size: 24px; margin-right: 10px;"></i>
+                    <i class="fab fa-youtube" style="color: #ffcc00; font-size: 24px; margin-right: 10px;"></i>
+                    <i class="fab fa-tiktok" style="color: #ffcc00; font-size: 24px;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> 
+
+</html>

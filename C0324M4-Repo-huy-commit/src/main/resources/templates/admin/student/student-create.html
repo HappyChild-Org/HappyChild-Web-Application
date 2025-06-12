@@ -17,7 +17,7 @@
     <form role="form" th:action="@{/admin/create-student}" th:object="${studentDTO}" method="post" enctype="multipart/form-data">
         <div class="form-grid">
             <div class="title_header">
-                <h2>Chi Tiết Sinh Viên</h2>
+                <h2>Chi Tiết Trẻ</h2>
             </div>
 
             <div class="form-fields">
@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="required" for="code">Mã sinh viên</label>
+                    <label class="required" for="code">Mã</label>
                     <input class="form-control" id="code" type="text" th:field="*{code}">
                     <div th:if="${#fields.hasErrors('code')}" th:errors="*{code}" class="text-danger"></div>
                 </div>

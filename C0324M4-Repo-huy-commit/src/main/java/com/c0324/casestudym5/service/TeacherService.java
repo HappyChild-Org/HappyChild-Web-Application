@@ -24,4 +24,5 @@ public interface TeacherService {
     List<Teacher> getAllTeachers();
 
     Teacher getTeacherByEmail(String email);
+    Teacher findByUserId(Long id);
 }

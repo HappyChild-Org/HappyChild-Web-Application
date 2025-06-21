@@ -180,7 +180,7 @@ public class UserServiceImpl implements UserService {
 
     private Collection<SimpleGrantedAuthority> mapRolesToAuthorities(Collection<Role> roles){
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().toString()))
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
     }
 

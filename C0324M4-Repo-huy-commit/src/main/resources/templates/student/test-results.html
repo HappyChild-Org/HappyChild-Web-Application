@@ -1,180 +1,266 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kết Quả Bài Test</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
     <style>
-        body {
-            background-color: #f9f9f9;
+        html, body {
+            height: 100%;
+            margin: 0;
         }
-
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Comic Neue', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .content {
+            flex: 1 0 auto;
+        }
+        .footer {
+            flex-shrink: 0;
+        }
         .results-container {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            background-color: #e6f3ff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .page-title {
+            color: #2a6b9e;
+            font-weight: bold;
             margin-bottom: 20px;
         }
-
         .result-item {
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            border: 1px solid #c4e1ff;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-
         .result-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
         }
-
         .result-title {
-            color: #4f46ba;
+            color: #2a6b9e;
             font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 1.3rem;
         }
-
         .result-info {
-            color: #6c757d;
-            font-size: 0.9rem;
+            color: #4a4a4a;
+            font-size: 0.95rem;
         }
-
         .status-badge {
-            padding: 5px 10px;
+            padding: 6px 12px;
             border-radius: 20px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
+            font-weight: bold;
         }
-
+        .status-pending {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+        .status-reviewed {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-archived {
+            background-color: #f5f5f5;
+            color: #6c757d;
+        }
         .score-circle {
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            background-color: #f1f2f6;
+            background-color: #c4e1ff;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             font-weight: bold;
         }
-
         .score-label {
-            font-size: 0.6rem;
-            color: #6c757d;
+            font-size: 0.7rem;
+            color: #4a4a4a;
         }
-
         .score-value {
-            font-size: 1.2rem;
-            color: #4f46ba;
+            font-size: 1.4rem;
+            color: #2a6b9e;
         }
-
         .empty-state {
             text-align: center;
             padding: 50px 20px;
-            background-color: #f8f9fa;
-            border-radius: 12px;
+            background-color: #e6f3ff;
+            border-radius: 15px;
             margin-top: 20px;
         }
-
         .empty-state i {
             font-size: 5rem;
-            color: #dee2e6;
+            color: #a3d9ff;
             margin-bottom: 20px;
         }
-
-        .result-actions {
-            text-align: center;
-            margin-top: 20px;
+        .empty-state h3 {
+            color: #2a6b9e;
+            margin-bottom: 15px;
         }
-
-        .btn-back {
-            background-color: #2196F3;
-            color: white;
+        .btn-primary {
+            background-color: #ffcc00;
+            color: #2a6b9e;
+            border: none;
             border-radius: 25px;
             padding: 10px 20px;
-            transition: all 0.3s;
+            font-weight: bold;
         }
-
-        .btn-back:hover {
-            background-color: #1976D2;
+        .btn-primary:hover {
+            background-color: #e6b800;
             transform: translateY(-2px);
+        }
+        .btn-outline-primary {
+            border-color: #ffcc00;
+            color: #2a6b9e;
+            border-radius: 25px;
+            padding: 8px 16px;
+            font-weight: bold;
+        }
+        .btn-outline-primary:hover {
+            background-color: #ffcc00;
+            color: #2a6b9e;
+        }
+        @media (max-width: 576px) {
+            .results-container {
+                padding: 15px;
+                margin: 15px;
+            }
+            .result-item {
+                padding: 15px;
+            }
+            .result-title {
+                font-size: 1.1rem;
+            }
+            .result-info {
+                font-size: 0.85rem;
+            }
+            .score-circle {
+                width: 60px;
+                height: 60px;
+            }
+            .score-value {
+                font-size: 1.2rem;
+            }
+            .score-label {
+                font-size: 0.6rem;
+            }
+            .btn-primary, .btn-outline-primary {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .score-circle {
+                margin-bottom: 10px;
+            }
+            .col-md-9, .col-md-3 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
         }
     </style>
 </head>
-
 <body>
-    <div th:replace="layout :: nav"></div>
+<!-- Navbar -->
+<div th:replace="~{fragments :: navbar}"></div>
 
-    <div class="container py-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="page-title">
-                <i class="fas fa-clipboard-list me-2"></i>Kết quả đánh giá tự kỷ
-            </h1>
-            <a th:href="@{/student/autism-tests}" class="btn btn-primary">
-                <i class="fas fa-plus me-1"></i>Làm bài đánh giá mới
-            </a>
-        </div>
+<!-- Nội dung chính -->
+<div class="content container py-5">
+    <div sec:authorize="hasRole('STUDENT')">
+        <div class="results-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="page-title">
+                    <i class="fas fa-clipboard-list me-2"></i>Kết Quả Đánh Giá Tự Kỷ
+                </h1>
+                <a th:href="@{/autism-test/tests}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Làm Bài Đánh Giá Mới
+                </a>
+            </div>
 
-        <div class="results-container" th:if="${not #lists.isEmpty(results)}">
-            <div class="row result-item" th:each="result : ${results}">
-                <div class="col-md-9">
-                    <h5 class="result-title" th:text="${result.test.testName}">Bài đánh giá tự kỷ</h5>
-                    <p class="result-info">
-                        <i class="fas fa-calendar-alt me-1"></i>
-                        <span>Hoàn thành: </span>
-                        <span th:text="${#temporals.format(result.completedAt, 'dd/MM/yyyy HH:mm')}">01/01/2023</span>
+            <p th:if="${error}" class="text-danger" th:text="${error}" style="text-align: center;"></p>
 
-                        <span class="ms-3">
-                            <i class="fas fa-tag me-1"></i>
-                            <span>Trạng thái: </span>
-                            <span class="status-badge badge bg-warning"
-                                th:if="${result.status.name() == 'PENDING_REVIEW'}">Chờ đánh giá</span>
-                            <span class="status-badge badge bg-success" th:if="${result.status.name() == 'REVIEWED'}">Đã
-                                đánh giá</span>
-                            <span class="status-badge badge bg-secondary"
-                                th:if="${result.status.name() == 'ARCHIVED'}">Đã lưu trữ</span>
-                        </span>
+            <div th:if="${results != null and !results.isEmpty()}">
+                <div class="row result-item" th:each="result : ${results}">
+                    <div class="col-md-9">
+                        <h5 class="result-title" th:text="${result.test != null} ? ${result.test.testName} : 'Bài Đánh Giá'">Bài Đánh Giá</h5>
+                        <p class="result-info">
+                            <i class="fas fa-calendar-alt me-1"></i>
+                            <span>Hoàn thành: </span>
+                            <span th:text="${result.completedAt != null} ? ${#temporals.format(result.completedAt, 'dd/MM/yyyy HH:mm')} : 'Không xác định'">Ngày</span>
 
-                        <span class="ms-3" th:if="${result.reviewedBy != null}">
-                            <i class="fas fa-user-md me-1"></i>
-                            <span>Đánh giá bởi: </span>
-                            <span th:text="${result.reviewedBy.name}">Tên chuyên gia</span>
-                        </span>
-                    </p>
-                    <p class="mt-2" th:if="${result.test.description != null}" th:text="${result.test.description}">
-                        Mô tả bài đánh giá
-                    </p>
-                </div>
-                <div class="col-md-3 d-flex align-items-center justify-content-end">
-                    <div class="score-circle me-3">
-                        <div class="score-label">Điểm</div>
-                        <div class="score-value" th:text="${result.totalScore}">15</div>
+                            <span class="ms-3">
+                                    <i class="fas fa-tag me-1"></i>
+                                    <span>Trạng thái: </span>
+                                    <span class="status-badge status-pending" th:if="${result.status != null and result.status.name() == 'PENDING_REVIEW'}">Chờ Đánh Giá</span>
+                                    <span class="status-badge status-reviewed" th:if="${result.status != null and result.status.name() == 'REVIEWED'}">Đã Đánh Giá</span>
+                                    <span class="status-badge status-archived" th:if="${result.status != null and result.status.name() == 'ARCHIVED'}">Đã Lưu Trữ</span>
+                                    <span class="status-badge status-pending" th:if="${result.status == null}">Không Xác Định</span>
+                                </span>
+
+                            <span class="ms-3" th:if="${result.reviewedBy != null}">
+                                    <i class="fas fa-user-md me-1"></i>
+                                    <span>Đánh giá bởi: </span>
+                                    <span th:text="${result.reviewedBy.name != null} ? ${result.reviewedBy.name} : 'Không xác định'">Tên Chuyên Gia</span>
+                                </span>
+                        </p>
+                        <p class="mt-2" th:if="${result.test != null and result.test.description != null}" th:text="${result.test.description}">
+                            Mô tả bài đánh giá
+                        </p>
                     </div>
-                    <a th:href="@{/student/autism-test-result/{id}(id=${result.id})}" class="btn btn-outline-primary">
-                        <i class="fas fa-eye me-1"></i>Chi tiết
-                    </a>
+                    <div class="col-md-3 d-flex align-items-center justify-content-end flex-wrap">
+                        <div class="score-circle me-3">
+                            <div class="score-label">Điểm</div>
+                            <div class="score-value" th:text="${result.totalScore != null} ? ${result.totalScore} : '-'">15</div>
+                        </div>
+                        <a th:href="@{/autism-test/result/{id}(id=${result.id})}" class="btn btn-outline-primary">
+                            <i class="fas fa-eye me-1"></i>Chi Tiết
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="empty-state" th:if="${#lists.isEmpty(results)}">
-            <i class="fas fa-clipboard-check"></i>
-            <h3>Chưa có kết quả đánh giá</h3>
-            <p>Bạn chưa hoàn thành bài đánh giá tự kỷ nào. Hãy làm một bài đánh giá để xem kết quả.</p>
-            <a th:href="@{/student/autism-tests}" class="btn btn-primary mt-3">
-                <i class="fas fa-play-circle me-1"></i>Bắt đầu làm bài
-            </a>
+            <div th:if="${results == null or results.isEmpty()}" class="empty-state">
+                <i class="fas fa-clipboard-check"></i>
+                <h3>Chưa Có Kết Quả Đánh Giá</h3>
+                <p>Bạn chưa hoàn thành bài đánh giá tự kỷ nào. Hãy làm một bài đánh giá để xem kết quả.</p>
+                <a th:href="@{/autism-test/tests}" class="btn btn-primary mt-3">
+                    <i class="fas fa-play-circle me-1"></i>Bắt Đầu Làm Bài
+                </a>
+            </div>
         </div>
     </div>
+    <div sec:authorize="!hasRole('STUDENT')">
+        <div class="text-center text-danger">
+            <p>Bạn không có quyền truy cập trang này. Vui lòng đăng nhập với tài khoản học sinh.</p>
+            <a th:href="@{/login}" class="btn btn-primary">Đăng Nhập</a>
+        </div>
+    </div>
+</div>
 
-    <div th:replace="layout :: footer"></div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Footer -->
+<div th:replace="~{fragments :: footer}"></div>
 </body>
-
 </html>

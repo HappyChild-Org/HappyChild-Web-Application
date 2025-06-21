@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm Câu hỏi Mới</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Thêm Câu hỏi Mới cho Bài kiểm tra: <span th:text="${test.testName}"></span></h1>
+        <p th:if="${error}" class="text-danger" th:text="${error}"></p>
+        <form th:action="@{/autism-test/teacher/manage-tests/{testId}/questions/create(testId=${test.id})}"
+            method="post">
+            <div class="mb-3">
+                <label for="questionText" class="form-label">Câu hỏi:</label>
+                <input type="text" class="form-control" id="questionText" name="questionText"
+                    th:value="${autismQuestion.question}" required>
+            </div>
+            <div class="mb-3">
+                <label for="category" class="form-label">Thể loại:</label>
+                <input type="text" class="form-control" id="category" name="category"
+                    th:value="${autismQuestion.category}" required>
+            </div>
+            <div class="mb-3">
+                <label for="weightScore" class="form-label">Điểm trọng số:</label>
+                <input type="number" class="form-control" id="weightScore" name="weightScore"
+                    th:value="${autismQuestion.weightScore}" required>
+            </div>
+            <div class="mb-3">
+                <label for="answerType" class="form-label">Loại câu trả lời (YES_NO, MULTIPLE_CHOICE, SCALE):</label>
+                <input type="text" class="form-control" id="answerType" name="answerType"
+                    th:value="${autismQuestion.answerType}" required>
+            </div>
+            <div class="mb-3">
+                <label for="imageUrl" class="form-label">URL Hình ảnh (tùy chọn):</label>
+                <input type="url" class="form-control" id="imageUrl" name="imageUrl"
+                    th:value="${autismQuestion.imageUrl}">
+            </div>
+            <div class="mb-3">
+                <label for="options" class="form-label">Tùy chọn (đối với MULTIPLE_CHOICE, ví dụ:
+                    '["A","B","C"]'):</label>
+                <input type="text" class="form-control" id="options" name="options"
+                    th:value="${autismQuestion.options}">
+            </div>
+            <button type="submit" class="btn btn-primary">Thêm Câu hỏi</button>
+            <a th:href="@{/autism-test/teacher/manage-tests/{testId}/questions(testId=${test.id})}"
+                class="btn btn-secondary">Hủy</a>
+        </form>
+    </div>
+</body>
+
+</html>

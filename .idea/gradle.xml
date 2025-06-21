@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/C0324M4-Repo-huy-commit" />
+        <option name="gradleJvm" value="#JAVA_HOME" />
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

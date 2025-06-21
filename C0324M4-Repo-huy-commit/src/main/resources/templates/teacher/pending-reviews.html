@@ -1,172 +1,253 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
-
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài Test Đang Chờ Đánh Giá</title>
+    <title>Danh Sách Bài Test Chưa Chấm</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
         body {
-            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Comic Neue', sans-serif;
+            background-color: #f0f4f8;
         }
-
+        .content {
+            flex: 1 0 auto;
+        }
+        .footer {
+            flex-shrink: 0;
+        }
         .content-container {
-            background-color: white;
-            border-radius: 10px;
+            background-color: #e6f3ff;
+            border-radius: 15px;
             padding: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             margin-top: 30px;
-        }
-
-        .page-title {
-            color: #3F51B5;
             margin-bottom: 30px;
-            border-bottom: 2px solid #E0E0E0;
-            padding-bottom: 15px;
         }
-
-        .student-card {
-            border-radius: 10px;
-            overflow: hidden;
-            transition: all 0.3s;
-            background-color: white;
-            border: 1px solid #e0e0e0;
-            margin-bottom: 20px;
-        }
-
-        .student-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .student-card-header {
-            background-color: #3F51B5;
-            color: white;
-            padding: 15px 20px;
-        }
-
-        .student-card-body {
-            padding: 20px;
-        }
-
-        .student-card-footer {
-            background-color: #f5f5f5;
-            padding: 15px 20px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .pending-count {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            background-color: #FF5722;
-            color: white;
-            border-radius: 50%;
-            margin-left: 10px;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-
-        .btn-view-results {
-            background-color: #3F51B5;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 20px;
-            transition: all 0.3s;
-        }
-
-        .btn-view-results:hover {
-            background-color: #303F9F;
-            transform: translateY(-2px);
-            color: white;
-        }
-
-        .empty-state {
+        h2 {
+            color: #2a6b9e;
             text-align: center;
-            padding: 50px 0;
-            color: #9E9E9E;
         }
-
-        .empty-state i {
-            font-size: 5rem;
-            margin-bottom: 20px;
-            opacity: 0.5;
+        .card {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 1px solid #c4e1ff;
+            transition: transform 0.2s;
         }
-
-        .empty-state h3 {
-            margin-bottom: 15px;
-            color: #616161;
+        .card:hover {
+            transform: translateY(-5px);
         }
-
-        .student-info {
-            display: flex;
-            align-items: center;
+        .card-title {
+            font-size: 22px;
+            color: #2a6b9e;
         }
-
-        .student-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: #E8EAF6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
+        .card-text {
+            font-size: 18px;
+            color: #4a4a4a;
+        }
+        .btn {
+            background-color: #ffcc00;
+            color: #2a6b9e;
+            font-size: 18px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+            border: none;
             font-weight: bold;
-            color: #3F51B5;
-            font-size: 1.5rem;
+        }
+        .btn:hover {
+            background-color: #e6b800;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        @media (max-width: 576px) {
+            .content-container {
+                padding: 15px;
+                margin: 15px;
+            }
+            .card {
+                margin-bottom: 15px;
+            }
+            .btn {
+                padding: 8px 16px;
+                font-size: 16px;
+            }
+        }
+        @media (max-width: 768px) {
+            .col-md-4 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
         }
     </style>
 </head>
-
 <body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg" style="background-color: #a3d9ff; border-radius: 0 0 15px 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
     <div class="container">
-        <div class="content-container">
-            <h1 class="page-title">
-                <i class="fas fa-clipboard-check me-2"></i> Bài Test Đang Chờ Đánh Giá
-            </h1>
-
-            <div th:if="${students.isEmpty()}" class="empty-state">
-                <i class="fas fa-check-circle"></i>
-                <h3>Không có bài test nào đang chờ đánh giá</h3>
-                <p>Tất cả các bài test đã được đánh giá. Bạn có thể kiểm tra lại sau.</p>
-            </div>
-
-            <div class="row" th:if="${!students.isEmpty()}">
-                <div class="col-lg-6" th:each="student : ${students}">
-                    <div class="student-card">
-                        <div class="student-card-header">
-                            <h5 class="m-0">Trẻ Cần Đánh Giá<span class="pending-count">1</span></h5>
+        <a class="navbar-brand" href="/">
+            <img src="https://happychild.vercel.app/assets/new-logo.08e032e4.jpg" alt="HappyChild Logo" style="height: 70px; border-radius: 10px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="/" style="color: #2a6b9e; font-weight: bold;">TRANG CHỦ</a></li>
+                <li class="nav-item"><a class="nav-link" href="/" style="color: #2a6b9e; font-weight: bold;">TIN TỨC</a></li>
+                <li class="nav-item"><a class="nav-link" href="/" style="color: #2a6b9e; font-weight: bold;">LIÊN HỆ</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown notif-icon" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-bell" style="font-size: 15px; color: #2a6b9e;"></i>
+                        <span id="notif-count" class="badge-notify" th:classappend="${newNotificationsCount > 0 ? ' show' : ''}" th:text="${newNotificationsCount > 3 ? '3+' : newNotificationsCount}" style="background-color: #ffcc00; color: #2a6b9e; border-radius: 50%; padding: 4px 8px;"></span>
+                    </a>
+                    <div class="dropdown-menu notif-dd" aria-labelledby="navbarDropdown" style="background-color: #c4e1ff; border-radius: 10px;">
+                        <div style="color: #da174a; padding: 10px 0; text-align: center" th:if="${notifications == null || notifications.isEmpty()}">
+                            Không có thông báo nào!
                         </div>
-                        <div class="student-card-body">
-                            <div class="student-info">
-                                <div class="student-avatar" th:text="${student.user.name.substring(0,1).toUpperCase()}">
-                                    H</div>
-                                <div>
-                                    <h5 th:text="${student.user.name}">Hà Hoàng</h5>
-                                    <p class="mb-0 text-muted" th:if="${student.user.email != null}"
-                                        th:text="${student.user.email}">hahoang@example.com</p>
+                        <div th:each="notif : ${notifications}" class="notif-list" style="padding: 10px;">
+                            <a th:href="${notif.url}" class="notif-link" style="text-decoration: none; color: inherit;">
+                                <div class="notif-img">
+                                    <img th:src="${notif.senderAvatar}" alt="user" style="border-radius: 50%; width: 40px; height: 40px;">
                                 </div>
-                            </div>
-                        </div>
-                        <div class="student-card-footer">
-                            <a th:href="@{'/teacher/student-results/' + ${student.id}}" class="btn btn-view-results">
-                                <i class="fas fa-eye me-1"></i> Xem Kết Quả Test
+                                <div class="notif-detail" style="margin-left: 10px;">
+                                    <p>
+                                        <b th:text="${notif.senderName}"></b>
+                                        <span th:text="${notif.content}"></span>
+                                    </p>
+                                    <p>
+                                        <small th:text="${notif.timeDifference}"></small>
+                                    </p>
+                                </div>
                             </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div>
+                <div class="dropdown user-profile d-flex justify-content-between align-items-center">
+                    <strong th:if="${username}" th:text="${username}" style="color: #2a6b9e;" class="me-3"></strong>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <img th:src="${currentUser.avatar != null ? currentUser.avatar.url : 'https://firebasestorage.googleapis.com/v0/b/cv-pdf-upload.appspot.com/o/casestudym5%2Favatar%2Fdefault-avatar.png?alt=media&token=a7b21608-1b68-45e0-9d6e-a5fcbcaac12e'}" alt="User profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" style="background-color: #c4e1ff; border-radius: 10px;">
+                        <li><a class="dropdown-item" th:href="@{/user/profile}" style="font-size: 18px; font-weight: 700; color: #2a6b9e;">THÔNG TIN CÁ NHÂN</a></li>
+                        <hr class="divider">
+                        <li><a class="dropdown-item" th:href="@{/user/change-password}" style="font-size: 18px; font-weight: 700; color: #2a6b9e;">ĐỔI MẬT KHẨU</a></li>
+                        <hr class="divider">
+                        <li><a class="dropdown-item" th:href="@{/logout}" style="font-size: 18px; font-weight: 700; color: #2a6b9e;">ĐĂNG XUẤT</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Nội dung chính -->
+<div class="content container">
+    <div sec:authorize="hasRole('TEACHER')">
+        <div class="content-container">
+            <h2 class="mb-4">Danh Sách Trẻ Cần Chấm Bài</h2>
+            <p th:if="${error}" class="text-danger" th:text="${error}" style="text-align: center;"></p>
+            <div th:if="${students == null or students.isEmpty()}" class="text-center">
+                <p style="color: #4a4a4a;">Hiện tại không có trẻ nào có bài test cần chấm.</p>
+            </div>
+            <div class="row" th:if="${students != null and !students.isEmpty()}">
+                <div th:each="student : ${students}" class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${student.name}">Tên Trẻ</h5>
+                            <p class="card-text" th:text="${student.email}">Email</p>
+                            <a th:href="@{/autism-test/teacher/student/{id}/pending-results(id=${student.id})}" class="btn">Xem Bài Chưa Chấm</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div sec:authorize="!hasRole('TEACHER')">
+        <div class="text-center text-danger">
+            <p>Bạn không có quyền truy cập trang này. Vui lòng đăng nhập với tài khoản giáo viên.</p>
+            <a th:href="@{/login}" class="btn btn-primary" style="background-color: #ffcc00; border: none; border-radius: 25px; color: #2a6b9e;">Đăng nhập</a>
+        </div>
+    </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Footer -->
+<footer class="footer py-4" style="background-color: #a3d9ff; border-radius: 15px 15px 0 0;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                <div class="logo"><span></span></div>
+                <p class="mb-4" style="color: #4a4a4a;">Hệ thống hỗ trợ trẻ em tự kỷ - HappyChild</p>
+                <div class="contact-info">
+                    <div>
+                        <i class="fas fa-map-marker-alt contact-icon" style="color: #ffcc00;"></i>
+                        <a class="text-decoration-none" href="https://www.google.com/maps/place/54+Nguy%E1%BB%85n+L%C6%B0%C6%A1ng+B%E1%BA%B1ng,+Ho%C3%A0+Kh%C3%A1nh+B%E1%BA%AFc,+Li%C3%AAn+Chi%E1%BB%83u,+%C4%90%C3%A0+N%E1%BA%B5ng+550000,+Vi%E1%BB%87t+Nam/@16.073867,108.147314,17z/data" target="_blank" rel="noopener noreferrer" style="color: #4a4a4a;">
+                            54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.
+                        </a>
+                    </div>
+                    <div>
+                        <i class="fas fa-envelope contact-icon" style="color: #ffcc00;"></i>
+                        <span style="color: #4a4a4a;">marketing@dut.vn</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-phone contact-icon" style="color: #ffcc00;"></i>
+                        <span style="color: #4a4a4a;">123456789</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                <h3 class="footer-heading" style="color: #2a6b9e;">Các hoạt động & Tài nguyên</h3>
+                <div class="products">
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Cựu học viên</a></div>
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Hoạt động cộng đồng</a></div>
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Tài liệu tải về</a></div>
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Blog chia sẻ kiến thức</a></div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <h3 class="footer-heading" style="color: #2a6b9e;">Đăng ký nhận thông tin</h3>
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" placeholder="Nhập email của bạn" style="border-radius: 25px 0 0 25px;">
+                    <button class="btn subscribe-btn text-white" type="button" style="background-color: #ffcc00; color: #2a6b9e; border-radius: 0 25px 25px 0;">Xác nhận</button>
+                </div>
+                <hr class="divider">
+                <h3 class="footer-heading" style="color: #2a6b9e;">Liên kết mạng xã hội</h3>
+                <div class="social-icons">
+                    <i class="fab fa-facebook" style="color: #ffcc00; font-size: 24px; margin-right: 10px;"></i>
+                    <i class="fab fa-linkedin" style="color: #ffcc00; font-size: 24px; margin-right: 10px;"></i>
+                    <i class="fab fa-youtube" style="color: #ffcc00; font-size: 24px; margin-right: 10px;"></i>
+                    <i class="fab fa-tiktok" style="color: #ffcc00; font-size: 24px;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
 </body>
-
 </html>

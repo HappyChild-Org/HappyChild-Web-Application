@@ -1,0 +1,211 @@
+body {
+    font-family: 'Comic Neue', sans-serif;
+    background-color: #f0f4f8;
+    color: #4a4a4a;
+}
+
+.navbar {
+    background-color: #a3d9ff;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.navbar-nav .nav-link {
+    color: #2a6b9e;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffcc00;
+}
+
+.dropdown-menu {
+    background-color: #e6f3ff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.hero-section {
+    background: linear-gradient(135deg, #a3d9ff, #ffcc00);
+    padding: 50px 0;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.hero-title {
+    color: #2a6b9e;
+    font-weight: bold;
+    font-size: 2.5rem;
+}
+
+.hero-button {
+    background-color: #ffcc00;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    color: #2a6b9e;
+    font-size: 24px;
+    transition: background-color 0.3s ease;
+}
+
+.hero-button:hover {
+    background-color: #e6b800;
+}
+
+.hero-image {
+    max-width: 80%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 15px;
+    display: block;
+    margin: 0 auto;
+}
+
+.main-title {
+    color: #2a6b9e;
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.card {
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background-color: #e6f3ff;
+}
+
+.announcement-card {
+    transition: transform 0.3s ease;
+}
+
+.announcement-card:hover {
+    transform: translateY(-5px);
+}
+
+.announcement-title {
+    color: #2a6b9e;
+    font-weight: bold;
+}
+
+.announcement-image {
+    object-fit: contain;
+    height: 150px;
+    width: 100%;
+    border-radius: 15px 15px 0 0;
+}
+
+.view-details {
+    color: #ffcc00;
+    text-decoration: none;
+}
+
+.view-details:hover {
+    text-decoration: underline;
+}
+
+.btn {
+    border-radius: 25px;
+}
+
+.btn-primary {
+    background-color: #ffcc00;
+    border: none;
+    color: #2a6b9e;
+}
+
+.btn-primary:hover {
+    background-color: #e6b800;
+}
+
+.btn-secondary {
+    background-color: #c4e1ff;
+    border: none;
+    color: #2a6b9e;
+}
+
+.btn-secondary:hover {
+    background-color: #a3d9ff;
+}
+
+.btn-outline-primary {
+    border-color: #ffcc00;
+    color: #ffcc00;
+}
+
+.btn-outline-primary:hover {
+    background-color: #ffcc00;
+    color: #2a6b9e;
+}
+
+.footer {
+    background-color: #a3d9ff;
+    border-radius: 15px 15px 0 0;
+    padding: 30px 0;
+}
+
+.footer-heading {
+    color: #2a6b9e;
+    font-size: 1.5rem;
+}
+
+.contact-icon {
+    color: #ffcc00;
+    margin-right: 10px;
+}
+
+.social-icons i {
+    color: #ffcc00;
+    font-size: 24px;
+    margin-right: 10px;
+    transition: color 0.3s ease;
+}
+
+.social-icons i:hover {
+    color: #e6b800;
+}
+
+.pagination .page-link {
+    background-color: #e6f3ff;
+    color: #2a6b9e;
+    border-radius: 25px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #ffcc00;
+    color: #2a6b9e;
+}
+
+.form-control {
+    border-radius: 10px;
+}
+
+.input-group .form-control {
+    border-radius: 25px 0 0 25px;
+}
+
+.input-group .btn {
+    border-radius: 0 25px 25px 0;
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 1.8rem;
+    }
+
+    .hero-button {
+        font-size: 18px;
+    }
+
+    .main-title {
+        font-size: 1.5rem;
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+
+    .hero-image {
+        max-width: 100%;
+    }
+}

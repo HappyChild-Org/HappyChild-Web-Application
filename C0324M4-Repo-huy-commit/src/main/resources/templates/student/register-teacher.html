@@ -1,226 +1,390 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Danh sách giáo viên</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}"/>
-    <link rel="stylesheet" href="/css/home-page.css">
-    <link rel="stylesheet" href="/css/team-info.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký Chuyên Gia Tư Vấn</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
     <style>
-        .profile-image {
-            width: 220px;
-            height: 340px;
-            object-fit: cover;
-            border-radius: 8px;
+        html, body {
+            height: 100%;
+            margin: 0;
         }
-
-        .form-control-plaintext {
-            background-color: #f0f0f0;
-            padding: 0.375rem 0.75rem;
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Comic Neue', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .content {
+            flex: 1 0 auto;
+        }
+        .footer {
+            flex-shrink: 0;
+        }
+        .content-container {
+            background-color: #e6f3ff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2a6b9e;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .teacher-card {
+            background-color: #ffffff;
+            border: 1px solid #c4e1ff;
             border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-        .modal-dialog {
-            max-width: 70%;
+        .teacher-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
         }
-        .btn-info i {
-            transition: transform 0.3s ease;
+        .teacher-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffcc00;
         }
-        .btn-info:hover i {
-            transform: scale(1.2);
+        .teacher-info {
+            margin-left: 15px;
+            flex-grow: 1;
+        }
+        .teacher-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2a6b9e;
+            margin-bottom: 5px;
+        }
+        .teacher-degree {
+            color: #4a4a4a;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+        .teacher-faculty {
+            color: #4a4a4a;
+            font-size: 0.9rem;
+        }
+        .teacher-stats {
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #4a4a4a;
+        }
+        .search-box .form-control {
+            border-radius: 25px;
+            border: 1px solid #c4e1ff;
+            padding: 10px 15px;
+        }
+        .search-box .btn-primary {
+            background-color: #ffcc00;
+            color: #2a6b9e;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-weight: bold;
+        }
+        .search-box .btn-primary:hover {
+            background-color: #e6b800;
+        }
+        .btn-register, .btn-details {
+            border-radius: 25px;
+            padding: 8px 15px;
+            font-weight: bold;
+        }
+        .btn-register {
+            background-color: #ffcc00;
+            color: #2a6b9e;
+            border: none;
+        }
+        .btn-register:hover {
+            background-color: #e6b800;
+        }
+        .btn-details {
+            background-color: #c4e1ff;
+            color: #2a6b9e;
+            border: none;
+        }
+        .btn-details:hover {
+            background-color: #a3d9ff;
+        }
+        .pagination .page-link {
+            color: #2a6b9e;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #ffcc00;
+            color: #2a6b9e;
+            border-color: #ffcc00;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #cccccc;
+        }
+        .modal-content {
+            border-radius: 10px;
+            background-color: #e6f3ff;
+        }
+        .modal-header {
+            background-color: #c4e1ff;
+            color: #2a6b9e;
+            border-bottom: 1px solid #a3d9ff;
+        }
+        .modal-body label {
+            color: #2a6b9e;
+            font-weight: bold;
+        }
+        .modal-body .form-control-static {
+            color: #4a4a4a;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            background-color: #e6f3ff;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        .empty-state i {
+            font-size: 5rem;
+            color: #a3d9ff;
+            margin-bottom: 20px;
+        }
+        .empty-state h3 {
+            color: #2a6b9e;
+            margin-bottom: 15px;
+        }
+        @media (max-width: 576px) {
+            .content-container {
+                padding: 15px;
+                margin: 15px;
+            }
+            .teacher-card {
+                padding: 15px;
+            }
+            .teacher-avatar {
+                width: 60px;
+                height: 60px;
+            }
+            .teacher-name {
+                font-size: 1.1rem;
+            }
+            .teacher-degree, .teacher-faculty {
+                font-size: 0.85rem;
+            }
+            .search-box .form-control, .search-box .btn {
+                font-size: 14px;
+                padding: 8px;
+            }
+            .btn-register, .btn-details {
+                font-size: 0.9rem;
+                padding: 6px 12px;
+            }
+        }
+        @media (max-width: 768px) {
+            .teacher-info {
+                margin-left: 10px;
+            }
+            .teacher-stats {
+                font-size: 0.85rem;
+            }
         }
     </style>
 </head>
 <body>
-<div th:replace="~{layout :: nav}"></div>
-<div id="toast-container"></div> <!--toast thông báo mới-->
+<!-- Navbar -->
+<div th:replace="~{fragments :: navbar}"></div>
 
-<div class="container"  style="margin-top: 120px" >
-    <div th:if="${errorMessage != null}" class="toast-container position-fixed top-0 end-0 p-3">
-        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="warningToast1">
-            <div class="toast-header bg-danger text-white">
-                <strong class="me-auto">Thất bại</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                <span th:text="${errorMessage}"></span>
-            </div>
-        </div>
-    </div>
+<!-- Content -->
+<div class="content container py-4">
+    <div sec:authorize="hasRole('STUDENT')">
+        <div class="content-container">
+            <h2>Đăng Ký Chuyên gia Tư Vấn</h2>
+            <p th:if="${error}" class="text-danger" th:text="${error}" style="text-align: center;"></p>
 
-    <div th:if="${message != null}" class="toast-container position-fixed top-0 end-0 p-3">
-        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="warningToast2">
-            <div th:class="${messageType == 'error-message' ? 'toast-header bg-danger text-white' : 'toast-header bg-success text-white'}">
-                <strong class="me-auto" th:text="${messageType == 'error-message' ? 'Thất bại' : 'Thành công'}"></strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                <span th:text="${message}"></span>
-            </div>
-        </div>
-    </div>
-
-    <h1 class="text-center my-4">Danh sách chuyên gia</h1>
-    <table class="table table-striped text-center align-middle">
-        <thead class="table-dark">
-        <tr>
-            <th>STT</th>
-            <th>Họ và Tên</th>
-            <th>Tình trạng đăng kí</th>
-            <th>Chi tiết</th>
-            <th>Hành Động</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="teacher : ${teachers}" id="teacher-${teacher.id}">
-            <td th:text="${teacher.id}"></td>
-            <td th:text="${teacher.user.name}"></td>
-            <td th:text="${teacherTeamCount[teacher.id]} + ' /5'"></td>
-            <td>
-                    <span class="btn-info" th:onclick="'loadTeacherDetails(' + ${teacher.id} + ')'">
-                        <i class="fas fa-eye"></i>
-                    </span>
-            </td>
-            <td>
-                <!-- Hiển thị nút Hủy cho nhóm đã đăng ký -->
-                <form th:if="${registeredTeacherIds != null && #lists.contains(registeredTeacherIds, teacher.id)}"
-                      th:action="@{/student/register-teacher}" method="post" class="d-inline" id="cancelForm-${teacher.id}">
-                    <input type="hidden" name="teacherId" th:value="0"/>
-                    <button type="submit" style="width: 110px" class="btn btn-danger">Hủy</button>
+            <!-- Search Box -->
+            <div class="search-box mb-4">
+                <form th:action="@{/student/list-teacher}" method="get" class="row g-3">
+                    <div class="col-md-8 col-sm-12">
+                        <input type="text" class="form-control" name="keyword" th:value="${param.keyword}" placeholder="Tìm kiếm giáo viên...">
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                        <button type="submit" class="btn btn-primary w-100">Tìm Kiếm</button>
+                    </div>
                 </form>
+            </div>
 
-                <!-- Hiển thị nút Đăng Ký cho nhóm chưa đăng ký -->
-                <form th:if="${registeredTeacherIds != null && !#lists.contains(registeredTeacherIds, teacher.id) && teacherTeamCount[teacher.id] < 5}"
-                      th:action="@{/student/register-teacher}" method="post" class="d-inline" id="registerForm-${teacher.id}">
-                    <input type="hidden" name="teacherId" th:value="${teacher.id}"/>
-                    <button type="submit" class="btn btn-primary" style="width: 110px">Đăng kí</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <!-- Phân trang -->
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${pageNumber == 0} ? 'disabled'">
-                <a class="page-link" th:href="@{/student/list-teacher(page=${pageNumber - 1})}" aria-label="Trước">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                th:classappend="${i == pageNumber} ? 'active'">
-                <a class="page-link" th:href="@{/student/list-teacher(page=${i})}" th:text="${i + 1}"></a>
-            </li>
-            <li class="page-item" th:classappend="${pageNumber == totalPages - 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/student/list-teacher(page=${pageNumber + 1})}" aria-label="Sau">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-
-
-    <!-- Modal Chi Tiết Giáo Viên -->
-    <div class="modal fade" id="teacherDetailModal" tabindex="-1" aria-labelledby="teacherDetailModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="teacherDetailModalLabel">Thông tin chi tiết</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <!-- Hình ảnh -->
-                        <div class="col-md-3 d-flex align-items-center">
-                            <img id="teacherAvatar" src="https://via.placeholder.com/150" alt="Giảng viên"
-                                 class="profile-image">
-                        </div>
-                        <!-- Thông tin -->
-                        <div class="info-container col-md-9">
-                            <div class="row mb-3">
-                                <div class="col-md-8">
-                                    <label class="form-label">Tên chuyên gia</label>
-                                    <input type="text" readonly class="form-control-plaintext" id="teacherName">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Giới tính</label>
-                                    <input type="text" readonly class="form-control-plaintext" id="teacherGender">
+            <!-- Teacher List -->
+            <div th:if="${teachers != null and !teachers.isEmpty()}">
+                <div class="row">
+                    <div th:each="teacher : ${teachers}" class="col-md-6 col-sm-12">
+                        <div class="teacher-card">
+                            <div class="d-flex align-items-center">
+                                <img th:src="${teacher.user != null and teacher.user.avatar != null} ? ${teacher.user.avatar.url} : '/img/default-avatar.png'"
+                                     class="teacher-avatar" alt="Teacher Avatar">
+                                <div class="teacher-info">
+                                    <div class="teacher-name" th:text="${teacher.user != null} ? ${teacher.user.name} : 'Không xác định'">Tên Giáo Viên</div>
+                                    <div class="teacher-degree" th:text="${teacher.degree != null} ? ${teacher.degree} : 'Không xác định'">Học Vị</div>
+                                    <div class="teacher-faculty" th:text="${teacher.faculty != null} ? ${teacher.faculty.name} : 'Không xác định'">Khoa</div>
+                                    <div class="teacher-stats">
+                                        <small>Số sinh viên đang hướng dẫn: </small>
+                                        <span th:text="${teacherTeamCount != null and teacherTeamCount[teacher.id] != null} ? ${teacherTeamCount[teacher.id]} + ' /10' : '0/10'">0/10</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-md-8">
-                                    <label class="form-label">Địa chỉ</label>
-                                    <input type="text" readonly class="form-control-plaintext" id="teacherAddress">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Số điện thoại</label>
-                                    <input type="text" readonly class="form-control-plaintext" id="teacherPhoneNumber">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-8">
-                                    <label class="form-label">Ngày sinh</label>
-                                    <input type="text" readonly class="form-control-plaintext" id="teacherDob">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Trình độ</label>
-                                    <input type="text" readonly class="form-control-plaintext" id="teacherDegree">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-8">
-                                    <label class="form-label">Email</label>
-                                    <input type="text" readonly class="form-control-plaintext" id="teacherEmail">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Chuyên nghành</label>
-                                    <input type="text" readonly class="form-control-plaintext" id="teacherFacutly">
-                                </div>
+                            <div class="mt-3 d-flex gap-2">
+                                <button class="btn btn-details btn-sm" th:onclick="'loadTeacherDetails(' + ${teacher.id} + ')'">
+                                    <i class="fas fa-eye"></i> Xem Chi Tiết
+                                </button>
+                                <form th:if="${registeredTeacherIds != null and !registeredTeacherIds.contains(teacher.id) and teacherIndividualStudentCount != null and teacherIndividualStudentCount[teacher.id] < 10}"
+                                      th:action="@{/student/register-individual-teacher}" method="post" class="d-inline">
+                                    <input type="hidden" name="teacherId" th:value="${teacher.id}"/>
+                                    <button type="submit" class="btn btn-register btn-sm">
+                                        <i class="fas fa-user-plus"></i> Đăng Ký Tư Vấn
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+
+                <!-- Pagination -->
+                <nav th:if="${totalPages != null and totalPages > 1}">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${pageNumber == 0} ? 'disabled'">
+                            <a class="page-link" th:href="@{/student/list-teacher(page=${pageNumber - 1}, keyword=${param.keyword})}">Trước</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                            th:classappend="${pageNumber == i} ? 'active'">
+                            <a class="page-link" th:href="@{/student/list-teacher(page=${i}, keyword=${param.keyword})}" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${pageNumber == totalPages - 1} ? 'disabled'">
+                            <a class="page-link" th:href="@{/student/list-teacher(page=${pageNumber + 1}, keyword=${param.keyword})}">Sau</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div th:if="${teachers == null or teachers.isEmpty()}" class="empty-state">
+                <i class="fas fa-users"></i>
+                <h3>Không Tìm Thấy Giáo Viên</h3>
+                <p>Không có giáo viên nào phù hợp với tìm kiếm của bạn. Vui lòng thử lại.</p>
+                <a th:href="@{/autism-test/student/dashboard}" class="btn btn-register">Quay Lại Dashboard</a>
+            </div>
+        </div>
+    </div>
+    <div sec:authorize="!hasRole('STUDENT')">
+        <div class="text-center text-danger">
+            <p>Bạn không có quyền truy cập trang này. Vui lòng đăng nhập với tài khoản học sinh.</p>
+            <a th:href="@{/login}" class="btn btn-register">Đăng Nhập</a>
+        </div>
+    </div>
+</div>
+
+<!-- Teacher Details Modal -->
+<div class="modal fade" id="teacherDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thông Tin Chi Tiết Giáo Viên</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <img id="teacherAvatar" src="" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Tên Giáo Viên</label>
+                                <div class="form-control-static" id="teacherName"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Giới Tính</label>
+                                <div class="form-control-static" id="teacherGender"></div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Email</label>
+                                <div class="form-control-static" id="teacherEmail"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Học Vị</label>
+                                <div class="form-control-static" id="teacherDegree"></div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Địa Chỉ</label>
+                                <div class="form-control-static" id="teacherAddress"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Số Điện Thoại</label>
+                                <div class="form-control-static" id="teacherPhoneNumber"></div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Ngày Sinh</label>
+                                <div class="form-control-static" id="teacherDob"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Khoa</label>
+                                <div class="form-control-static" id="teacherFacutly"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div th:replace="layout :: footer"></div>
-<!-- Thêm các thư viện JS -->
-<script th:src="@{/webjars/sockjs-client/1.5.1/sockjs.min.js}"></script>
-<script th:src="@{/webjars/stomp-websocket/2.3.3/stomp.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+
 <script>
     function loadTeacherDetails(teacherId) {
         fetch(`/student/teacher-details/${teacherId}`)
             .then(response => response.json())
             .then(teacher => {
                 if (!teacher.id) throw new Error("Dữ liệu không hợp lệ");
-                document.getElementById("teacherName").value = teacher.name;
-                document.getElementById("teacherEmail").value = teacher.email;
-                document.getElementById("teacherDegree").value = teacher.degree;
-                document.getElementById("teacherPhoneNumber").value = teacher.phoneNumber;
-                document.getElementById("teacherDob").value = new Date(teacher.dob).toLocaleDateString();
-                document.getElementById("teacherAddress").value = teacher.address;
-                document.getElementById("teacherGender").value = teacher.gender === "MALE" ? "Nam" : "Nữ";
-                document.getElementById("teacherFacutly").value = teacher.facutly;
-                document.getElementById("teacherAvatar").src = teacher.avatar ? teacher.avatar.url : "https://firebasestorage.googleapis.com/v0/b/cv-pdf-upload.appspot.com/o/casestudym5%2Favatar%2Fdefault-avatar.png?alt=media&token=a7b21608-1b68-45e0-9d6e-a5fcbcaac12e";
+                document.getElementById("teacherName").textContent = teacher.name || 'Không xác định';
+                document.getElementById("teacherEmail").textContent = teacher.email || 'Không xác định';
+                document.getElementById("teacherDegree").textContent = teacher.degree || 'Không xác định';
+                document.getElementById("teacherPhoneNumber").textContent = teacher.phoneNumber || 'Không xác định';
+                document.getElementById("teacherDob").textContent = teacher.dob ? new Date(teacher.dob).toLocaleDateString('vi-VN') : 'Không xác định';
+                document.getElementById("teacherAddress").textContent = teacher.address || 'Không xác định';
+                document.getElementById("teacherGender").textContent = teacher.gender === "MALE" ? "Nam" : teacher.gender === "FEMALE" ? "Nữ" : 'Không xác định';
+                document.getElementById("teacherFacutly").textContent = teacher.facutly || 'Không xác định';
+                document.getElementById("teacherAvatar").src = teacher.avatar ? teacher.avatar.url : '/img/default-avatar.png';
                 const teacherDetailModal = new bootstrap.Modal(document.getElementById('teacherDetailModal'));
                 teacherDetailModal.show();
             })
             .catch(error => {
-                console.error("Lỗi tải thông tin chuyên gia:", error.message);
-                alert('Không thể tải thông tin chuyên gia: ' + error.message);
+                console.error("Lỗi tải thông tin giáo viên:", error.message);
+                alert('Không thể tải thông tin giáo viên: ' + error.message);
             });
     }
-
 </script>
-<script th:src="@{/js/notification.js}"></script>
-<script th:src="@{/js/toast-noti.js}"></script>
 </body>
 </html>

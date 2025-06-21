@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<!-- Navbar Fragment -->
+<nav th:fragment="navbar" class="navbar navbar-expand-lg" style="background-color: #a3d9ff; border-radius: 0 0 15px 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <img src="https://happychild.vercel.app/assets/new-logo.08e032e4.jpg" alt="HappyChild Logo" style="height: 70px; border-radius: 10px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="/" style="color: #2a6b9e; font-weight: bold;">TRANG CHỦ</a></li>
+                <li class="nav-item"><a class="nav-link" href="/" style="color: #2a6b9e; font-weight: bold;">TIN TỨC</a></li>
+                <li class="nav-item"><a class="nav-link" href="/" style="color: #2a6b9e; font-weight: bold;">LIÊN HỆ</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown notif-icon" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-bell" style="font-size: 15px; color: #2a6b9e;"></i>
+                        <span id="notif-count" class="badge-notify" th:classappend="${newNotificationsCount > 0 ? ' show' : ''}" th:text="${newNotificationsCount > 3 ? '3+' : newNotificationsCount}" style="background-color: #ffcc00; color: #2a6b9e; border-radius: 50%; padding: 4px 8px;"></span>
+                    </a>
+                    <div class="dropdown-menu notif-dd" aria-labelledby="navbarDropdown" style="background-color: #c4e1ff; border-radius: 10px;">
+                        <div style="color: #da174a; padding: 10px 0; text-align: center" th:if="${notifications == null || notifications.isEmpty()}">
+                            Không có thông báo nào!
+                        </div>
+                        <div th:each="notif : ${notifications}" class="notif-list" style="padding: 10px;">
+                            <a th:href="${notif.url}" class="notif-link" style="text-decoration: none; color: inherit;">
+                                <div class="notif-img">
+                                    <img th:src="${notif.senderAvatar}" alt="user" style="border-radius: 50%; width: 40px; height: 40px;">
+                                </div>
+                                <div class="notif-detail" style="margin-left: 10px;">
+                                    <p>
+                                        <b th:text="${notif.senderName}"></b>
+                                        <span th:text="${notif.content}"></span>
+                                    </p>
+                                    <p>
+                                        <small th:text="${notif.timeDifference}"></small>
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div>
+                <div class="dropdown user-profile d-flex justify-content-between align-items-center">
+                    <strong th:if="${username}" th:text="${username}" style="color: #2a6b9e;" class="me-3"></strong>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <img th:src="${currentUser.avatar != null ? currentUser.avatar.url : 'https://firebasestorage.googleapis.com/v0/b/cv-pdf-upload.appspot.com/o/casestudym5%2Favatar%2Fdefault-avatar.png?alt=media&token=a7b21608-1b68-45e0-9d6e-a5fcbcaac12e'}" alt="User profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" style="background-color: #80ffd9; border-radius: 10px;">
+                        <li><a class="dropdown-item" th:href="@{/user/profile}" style="font-size: 18px; font-weight: 700; color: #2a6b9e;">THÔNG TIN CÁ NHÂN</a></li>
+                        <hr class="divider">
+                        <li><a class="dropdown-item" th:href="@{/user/change-password}" style="font-size: 18px; font-weight: 700; color: #2a6b9e;">ĐỔI MẬT KHẨU</a></li>
+                        <hr class="divider">
+                        <li><a class="dropdown-item" th:href="@{/logout}" style="font-size: 18px; font-weight: 700; color: #2a6b9e;">ĐĂNG XUẤT</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Footer Fragment -->
+<footer th:fragment="footer" class="footer py-4" style="background-color: #a3d9ff; border-radius: 15px 15px 0 0;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                <div class="logo"><span></span></div>
+                <p class="mb-4" style="color: #4a4a4a;">Hệ thống hỗ trợ trẻ em tự kỷ - HappyChild</p>
+                <div class="contact-info">
+                    <div>
+                        <i class="fas fa-map-marker-alt contact-icon" style="color: #ffcc00;"></i>
+                        <a class="text-decoration-none" href="https://www.google.com/maps/place/54+Nguy%E1%BB%85n+L%C6%B0%C6%A1ng+B%E1%BA%B1ng,+Ho%C3%A0+Kh%C3%A1nh+B%E1%BA%AFc,+Li%C3%AAn+Chi%E1%BB%83u,+%C4%90%C3%A0+N%E1%BA%B5ng+550000,+Vi%E1%BB%87t+Nam/@16.073867,108.147314,17z/data" target="_blank" rel="noopener noreferrer" style="color: #4a4a4a;">
+                            54 Nguyễn Lương Bằng, Liên Chiểu, Đà Nẵng.
+                        </a>
+                    </div>
+                    <div>
+                        <i class="fas fa-envelope contact-icon" style="color: #ffcc00;"></i>
+                        <span style="color: #4a4a4a;">marketing@dut.vn</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-phone contact-icon" style="color: #ffcc00;"></i>
+                        <span style="color: #4a4a4a;">123456789</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                <h3 class="footer-heading" style="color: #2a6b9e;">Các hoạt động & Tài nguyên</h3>
+                <div class="products">
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Cựu học viên</a></div>
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Hoạt động cộng đồng</a></div>
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Tài liệu tải về</a></div>
+                    <div><a href="" target="_blank" class="post-title" style="color: #4a4a4a;">Blog chia sẻ kiến thức</a></div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <h3 class="footer-heading" style="color: #2a6b9e;">Đăng ký nhận thông tin</h3>
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" placeholder="Nhập email của bạn" style="border-radius: 25px 0 0 25px;">
+                    <button class="btn subscribe-btn text-white" type="button" style="background-color: #ffcc00; color: #2a6b9e; border-radius: 0 25px 25px 0;">Xác nhận</button>
+                </div>
+                <hr class="divider">
+                <h3 class="footer-heading" style="color: #2a6b9e;">Liên kết mạng xã hội</h3>
+                <div class="social-icons">
+                    <i class="fab fa-facebook" style="color: #ffcc00; font-size: 24px; margin-right: 10px;"></i>
+                    <i class="fab fa-linkedin" style="color: #ffcc00; font-size: 24px; margin-right: 10px;"></i>
+                    <i class="fab fa-youtube" style="color: #ffcc00; font-size: 24px; margin-right: 10px;"></i>
+                    <i class="fab fa-tiktok" style="color: #ffcc00; font-size: 24px;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

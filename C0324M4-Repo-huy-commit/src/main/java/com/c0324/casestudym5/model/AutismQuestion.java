@@ -5,8 +5,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+
+// model tạo câu hỏi
 @Entity
 @Table(name = "autism_questions")
 public class AutismQuestion {
@@ -20,6 +24,10 @@ public class AutismQuestion {
     private String category;
     
     private Integer weightScore;
+    
+    @ManyToOne
+    @JoinColumn(name = "test_id")
+    private AutismTest autismTest;
     
     // For visual questions
     private String imageUrl;
@@ -83,5 +91,13 @@ public class AutismQuestion {
     
     public void setOptions(String options) {
         this.options = options;
+    }
+
+    public AutismTest getAutismTest() {
+        return autismTest;
+    }
+
+    public void setAutismTest(AutismTest autismTest) {
+        this.autismTest = autismTest;
     }
 } 

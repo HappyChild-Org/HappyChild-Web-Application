@@ -1,7 +1,5 @@
 package com.c0324.casestudym5.dto;
-
 import com.c0324.casestudym5.model.Student;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -12,8 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
 import java.util.Date;
 
 @NoArgsConstructor

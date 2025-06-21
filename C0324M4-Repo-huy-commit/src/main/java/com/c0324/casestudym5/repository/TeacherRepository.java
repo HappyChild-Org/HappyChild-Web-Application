@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface TeacherRepository extends JpaRepository<Teacher, Long> {
     Teacher findById(long id);
@@ -24,6 +26,6 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 
     Teacher findTeacherByUserEmail(String email);
 
-    Teacher findTeacherByUserId(Long id);
+    Optional<Teacher> findByUserId(Long userId);
 }
 

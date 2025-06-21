@@ -1,7 +1,9 @@
 package com.c0324.casestudym5.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -10,8 +12,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+
+// model chính tạo test
 @Entity
 @Table(name = "autism_tests")
 public class AutismTest {
@@ -35,6 +40,9 @@ public class AutismTest {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User creator;
+    
+    @OneToMany(mappedBy = "autismTest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AutismQuestion> questions;
     
     public enum TestStatus {
         ACTIVE, INACTIVE, DRAFT
@@ -103,5 +111,13 @@ public class AutismTest {
     
     public void setCreator(User creator) {
         this.creator = creator;
+    }
+
+    public List<AutismQuestion> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<AutismQuestion> questions) {
+        this.questions = questions;
     }
 } 

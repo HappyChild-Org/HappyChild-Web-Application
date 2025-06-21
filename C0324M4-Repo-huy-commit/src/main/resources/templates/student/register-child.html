@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký thông tin trẻ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .form-title {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .form-label {
+            font-weight: 500;
+            color: #34495e;
+        }
+        .required-field::after {
+            content: " *";
+            color: red;
+        }
+        .help-text {
+            font-size: 0.875rem;
+            color: #7f8c8d;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Đăng ký thông tin trẻ</h2>
+            
+            <form th:action="@{/student/register-child}" method="post" th:object="${childRegistrationDTO}">
+                <div class="mb-3">
+                    <label for="name" class="form-label required-field">Họ và tên trẻ</label>
+                    <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="dob" class="form-label required-field">Ngày sinh</label>
+                    <input type="date" class="form-control" id="dob" th:field="*{dob}" required>
+                    <div class="help-text">Vui lòng nhập chính xác ngày sinh của trẻ để xác định độ tuổi phù hợp cho bài test</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label required-field">Giới tính</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender" id="male" value="MALE" th:field="*{gender}" required>
+                        <label class="form-check-label" for="male">Nam</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender" id="female" value="FEMALE" th:field="*{gender}">
+                        <label class="form-check-label" for="female">Nữ</label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="parentName" class="form-label required-field">Họ và tên phụ huynh</label>
+                    <input type="text" class="form-control" id="parentName" th:field="*{parentName}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="phoneNumber" class="form-label required-field">Số điện thoại liên hệ</label>
+                    <input type="tel" class="form-control" id="phoneNumber" th:field="*{phoneNumber}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="address" class="form-label">Địa chỉ</label>
+                    <textarea class="form-control" id="address" th:field="*{address}" rows="3"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="note" class="form-label">Ghi chú</label>
+                    <textarea class="form-control" id="note" th:field="*{note}" rows="3" 
+                              placeholder="Nhập thông tin bổ sung về tình trạng của trẻ (nếu có)"></textarea>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Đăng ký</button>
+                    <a th:href="@{/student/autism-tests}" class="btn btn-secondary">Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

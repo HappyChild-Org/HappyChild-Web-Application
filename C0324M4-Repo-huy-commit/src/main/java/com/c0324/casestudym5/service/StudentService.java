@@ -34,4 +34,7 @@ public interface StudentService {
 
     boolean existsByCode(String code);
     Page<Student> findStudentsByTeacherId(Long teacherId ,Pageable pageable, StudentSearchDTO search);
+
+    List<Student> findAll();
+
 }

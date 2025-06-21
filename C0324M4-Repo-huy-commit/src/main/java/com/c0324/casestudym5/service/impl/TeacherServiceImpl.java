@@ -170,4 +170,9 @@ public class TeacherServiceImpl implements TeacherService {
     public Teacher getTeacherByEmail(String email) {
         return teacherRepository.findTeacherByUserEmail(email);
     }
+
+    @Override
+    public Teacher findByUserId(Long id) {
+        return teacherRepository.findByUserId(id).orElse(null);
+    }
 }

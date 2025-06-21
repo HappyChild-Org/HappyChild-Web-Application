@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Student Profile</title>
+</head>
+<body>
+    <section class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4">Student Profile</h2>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <img th:if="${student.user.avatar != null}" 
+                             th:src="${student.user.avatar.url}" 
+                             class="rounded-circle img-fluid mb-3" 
+                             style="width: 150px; height: 150px; object-fit: cover;"
+                             alt="Profile Picture">
+                        <img th:unless="${student.user.avatar != null}"
+                             th:src="@{${student.user.gender == 'MALE' ? '/img/avatar-boy.png' : '/img/avatar-girl.png'}}"
+                             class="rounded-circle img-fluid mb-3"
+                             style="width: 150px; height: 150px; object-fit: cover;"
+                             alt="Default Avatar">
+                        <h4 th:text="${student.user.name}">Student Name</h4>
+                        <p class="text-muted" th:text="${student.code}">Student Code</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Personal Information</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Email:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:text="${student.user.email}">email@example.com</span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Phone Number:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:text="${student.user.phoneNumber}">Phone Number</span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Date of Birth:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:text="${#dates.format(student.user.dob, 'dd/MM/yyyy')}">Date of Birth</span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Gender:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:text="${student.user.gender}">Gender</span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Address:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:text="${student.user.address}">Address</span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Class:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:text="${student.clazz.name}">Class Name</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html> 
